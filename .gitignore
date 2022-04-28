@@ -1,0 +1,11 @@
+# Package lock
+package-lock.json
+
+# Compiled files
+dist
+
+# Dependency directory
+node_modules
+
+# Local eslint cache
+.eslintcache
