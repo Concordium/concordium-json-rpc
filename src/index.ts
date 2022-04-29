@@ -1,9 +1,9 @@
 import express from 'express';
 import jayson, { JSONRPCCallbackTypePlain } from 'jayson';
-import bodyPaser from 'body-parser';
+import bodyParser from 'body-parser';
 
 // TODO Port has to be configureable.
-const port = 9090;
+const port = 9095;
 const app = express();
 
 const server = new jayson.Server({
@@ -15,6 +15,6 @@ const server = new jayson.Server({
     },
 });
 
-app.use(bodyPaser.json());
+app.use(bodyParser.json());
 app.post('/json-rpc', server.middleware());
 app.listen(port);
