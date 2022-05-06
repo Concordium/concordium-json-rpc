@@ -1,9 +1,10 @@
 import express from 'express';
 import jayson, { JSONRPCCallbackTypePlain } from 'jayson';
-import bodyParser from 'body-parser';
+import minimist from 'minimist';
 
-// TODO Port has to be configureable.
-const port = 9095;
+const argv = minimist(process.argv.slice(2));
+const jsonRpcPort = Number(argv.port);
+
 const app = express();
 
 const server = new jayson.Server({
@@ -15,6 +16,10 @@ const server = new jayson.Server({
     },
 });
 
-app.use(bodyParser.json());
+app.use(express.json());
 app.post('/json-rpc', server.middleware());
-app.listen(port);
+app.listen(jsonRpcPort);
+
+console.log(
+    'Concordium JSON-RPC server is now listening on port ' + jsonRpcPort
+);
