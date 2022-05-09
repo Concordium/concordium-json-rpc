@@ -1,8 +1,12 @@
 import { JSONRPCCallbackTypePlain, MethodLike } from 'jayson';
-import { AccountAddress, JsonResponse } from '../grpc/concordium_p2p_rpc_pb';
-import { AccountAddress as ConcordiumAccountAddress } from '@concordium/node-sdk';
+import {
+    AccountAddress,
+    JsonResponse,
+    TransactionHash,
+} from '../grpc/concordium_p2p_rpc_pb';
 import NodeClient from './client';
-import { invalidParameterError } from './errors';
+import { invalidParameterError, missingParameterError } from './errors';
+import { isValidAccountAddress, isValidHash } from './validation';
 
 class JsonRpcMethods {
     nodeClient: NodeClient;
@@ -15,16 +19,10 @@ class JsonRpcMethods {
         params: { address: string },
         callback: JSONRPCCallbackTypePlain
     ) {
-        if (!params.address) {
-            return invalidParameterError(
-                "Missing 'address' parameter",
-                callback
-            );
-        }
-
-        try {
-            new ConcordiumAccountAddress(params.address);
-        } catch {
+        const address = params.address;
+        if (!address) {
+            return missingParameterError('address', callback);
+        } else if (!isValidAccountAddress(address)) {
             return invalidParameterError(
                 'The provided account address [' +
                     params.address +
@@ -34,12 +32,45 @@ class JsonRpcMethods {
         }
 
         const accountAddressObject = new AccountAddress();
-        accountAddressObject.setAccountAddress(params.address);
+        accountAddressObject.setAccountAddress(address);
 
         this.nodeClient
             .sendRequest(
                 this.nodeClient.client.getNextAccountNonce,
                 accountAddressObject
+            )
+            .then((result) => {
+                return callback(
+                    null,
+                    JsonResponse.deserializeBinary(result).getValue()
+                );
+            })
+            .catch((e) => callback(e, null));
+    }
+
+    getTransactionStatus(
+        params: { transactionHash: string },
+        callback: JSONRPCCallbackTypePlain
+    ) {
+        const transactionHash = params.transactionHash;
+        if (!transactionHash) {
+            return missingParameterError('transactionHash', callback);
+        } else if (!isValidHash(transactionHash)) {
+            return invalidParameterError(
+                'The provided transaction hash [' +
+                    transactionHash +
+                    '] is not a valid hash',
+                callback
+            );
+        }
+
+        const transactionHashObject = new TransactionHash();
+        transactionHashObject.setTransactionHash(transactionHash);
+
+        this.nodeClient
+            .sendRequest(
+                this.nodeClient.client.getTransactionStatus,
+                transactionHashObject
             )
             .then((result) => {
                 return callback(
@@ -61,5 +92,9 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
             params: { address: string },
             callback: JSONRPCCallbackTypePlain
         ) => jsonRpcMethods.getNextAccountNonce(params, callback),
+        getTransactionStatus: (
+            params: { transactionHash: string },
+            callback: JSONRPCCallbackTypePlain
+        ) => jsonRpcMethods.getTransactionStatus(params, callback),
     };
 }
