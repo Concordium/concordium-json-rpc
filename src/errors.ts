@@ -13,3 +13,16 @@ export function invalidParameterError(
 ): void {
     return callback({ message, code: invalidParamsCode }, null);
 }
+
+/**
+ * Returns a jayson callback with a missing parameter error.
+ * @param name the name of the missing parameter
+ * @param callback the jayson callback function
+ */
+export function missingParameterError(
+    name: string,
+    callback: JSONRPCCallbackTypePlain
+): void {
+    const message = `Missing '${name}' parameter`;
+    return invalidParameterError(message, callback);
+}
