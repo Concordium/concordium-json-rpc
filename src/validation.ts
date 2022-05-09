@@ -32,3 +32,17 @@ export function isValidAccountAddress(address: string): boolean {
         return false;
     }
 }
+
+/**
+ * Checks whether a string is a valid non-empty base64 encoded string.
+ * @param input the string to validate as being base64
+ * @returns true if the string is base64, otherwise false
+ */
+export function isValidBase64(input: string): boolean {
+    if (input.length === 0) {
+        return false;
+    }
+    const base64Regex =
+        /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+    return base64Regex.test(input);
+}

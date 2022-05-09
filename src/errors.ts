@@ -11,7 +11,7 @@ export function invalidParameterError(
     message: string,
     callback: JSONRPCCallbackTypePlain
 ): void {
-    return callback({ message, code: invalidParamsCode }, null);
+    return callback({ message, code: invalidParamsCode });
 }
 
 /**
