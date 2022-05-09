@@ -1,12 +1,22 @@
 import { JSONRPCCallbackTypePlain, MethodLike } from 'jayson';
 import {
     AccountAddress,
+    BoolResponse,
     JsonResponse,
+    SendTransactionRequest,
     TransactionHash,
 } from '../grpc/concordium_p2p_rpc_pb';
 import NodeClient from './client';
-import { invalidParameterError, missingParameterError } from './errors';
-import { isValidAccountAddress, isValidHash } from './validation';
+import {
+    invalidParameterError,
+    missingParameterError,
+    nodeError,
+} from './errors';
+import {
+    isValidAccountAddress,
+    isValidBase64,
+    isValidHash,
+} from './validation';
 
 class JsonRpcMethods {
     nodeClient: NodeClient;
@@ -20,7 +30,7 @@ class JsonRpcMethods {
         callback: JSONRPCCallbackTypePlain
     ) {
         const address = params.address;
-        if (!address) {
+        if (address === undefined) {
             return missingParameterError('address', callback);
         } else if (!isValidAccountAddress(address)) {
             return invalidParameterError(
@@ -45,7 +55,7 @@ class JsonRpcMethods {
                     JsonResponse.deserializeBinary(result).getValue()
                 );
             })
-            .catch((e) => callback(e, null));
+            .catch((e) => callback(e));
     }
 
     getTransactionStatus(
@@ -53,7 +63,7 @@ class JsonRpcMethods {
         callback: JSONRPCCallbackTypePlain
     ) {
         const transactionHash = params.transactionHash;
-        if (!transactionHash) {
+        if (transactionHash === undefined) {
             return missingParameterError('transactionHash', callback);
         } else if (!isValidHash(transactionHash)) {
             return invalidParameterError(
@@ -78,7 +88,42 @@ class JsonRpcMethods {
                     JsonResponse.deserializeBinary(result).getValue()
                 );
             })
-            .catch((e) => callback(e, null));
+            .catch((e) => callback(e));
+    }
+
+    sendAccountTransaction(
+        params: { transaction: string },
+        callback: JSONRPCCallbackTypePlain
+    ) {
+        const transaction = params.transaction;
+        if (transaction === undefined) {
+            return missingParameterError('transaction', callback);
+        } else if (!isValidBase64(transaction)) {
+            return invalidParameterError(
+                'The provided transaction [' +
+                    transaction +
+                    '] is not a valid non-empty base64 encoded string',
+                callback
+            );
+        }
+
+        const serializedAccountTransaction = Buffer.from(transaction, 'base64');
+        const sendTransactionRequest = new SendTransactionRequest();
+        sendTransactionRequest.setNetworkId(100);
+        sendTransactionRequest.setPayload(serializedAccountTransaction);
+
+        this.nodeClient
+            .sendRequest(
+                this.nodeClient.client.sendTransaction,
+                sendTransactionRequest
+            )
+            .then((result) => {
+                return callback(
+                    null,
+                    BoolResponse.deserializeBinary(result).getValue()
+                );
+            })
+            .catch((e) => nodeError(e, callback));
     }
 }
 
@@ -96,5 +141,9 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
             params: { transactionHash: string },
             callback: JSONRPCCallbackTypePlain
         ) => jsonRpcMethods.getTransactionStatus(params, callback),
+        sendAccountTransaction: (
+            params: { transaction: string },
+            callback: JSONRPCCallbackTypePlain
+        ) => jsonRpcMethods.sendAccountTransaction(params, callback),
     };
 }
