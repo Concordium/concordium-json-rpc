@@ -9,3 +9,6 @@ node_modules
 
 # Local eslint cache
 .eslintcache
+
+# Auto generated gRPC files
+grpc

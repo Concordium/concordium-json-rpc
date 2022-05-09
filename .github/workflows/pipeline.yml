@@ -26,6 +26,9 @@ jobs:
             - name: Get dependencies
               run: yarn
 
+            - name: Generate gRPC
+              run: yarn generate
+
             - name: Build
               run: yarn build
 
