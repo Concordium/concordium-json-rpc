@@ -7,7 +7,11 @@ import {
     TransactionHash,
 } from '../grpc/concordium_p2p_rpc_pb';
 import NodeClient from './client';
-import { invalidParameterError, missingParameterError } from './errors';
+import {
+    invalidParameterError,
+    missingParameterError,
+    nodeError,
+} from './errors';
 import {
     isValidAccountAddress,
     isValidBase64,
@@ -119,7 +123,7 @@ class JsonRpcMethods {
                     BoolResponse.deserializeBinary(result).getValue()
                 );
             })
-            .catch((e) => callback(e));
+            .catch((e) => nodeError(e, callback));
     }
 }
 
