@@ -60,5 +60,6 @@ app.post('/json-rpc', (req, res, next) => {
 app.listen(jsonRpcPort);
 
 logger.info(
-    'Concordium JSON-RPC server is now listening on port ' + jsonRpcPort
-, { nodeAddress, nodePort, nodeTimeout });
+    'Concordium JSON-RPC server is now listening on port ' + jsonRpcPort,
+    { nodeAddress, nodePort, nodeTimeout }
+);

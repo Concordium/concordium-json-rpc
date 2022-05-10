@@ -6,7 +6,12 @@ const logger = winston.createLogger({
         winston.format.timestamp(),
         winston.format.json()
     ),
-    transports: [new winston.transports.File({ filename: 'combined.log' })],
+    transports: [
+        new winston.transports.File({
+            filename: 'combined.log',
+            maxsize: 10000000,
+        }),
+    ],
 });
 
 if (process.env.NODE_ENV !== 'production') {
