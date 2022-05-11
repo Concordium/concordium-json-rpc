@@ -41,8 +41,11 @@
     "dependencies": {
         "@concordium/node-sdk": "^0.7.2",
         "@grpc/grpc-js": "^1.6.7",
+        "@types/uuid": "^8.3.4",
         "express": "^4.18.0",
         "jayson": "^3.6.6",
-        "minimist": "^1.2.6"
+        "minimist": "^1.2.6",
+        "uuid": "^8.3.2",
+        "winston": "^3.7.2"
     }
 }
