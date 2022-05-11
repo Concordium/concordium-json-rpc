@@ -9,7 +9,7 @@ The Concordium JSON-RPC proxy server allows for interacting with a node using th
 Returns the next account nonce for the account with the provided address.
 
 #### Parameters
-- `address` - the account address as a base58 string
+- `address` - the account address as a base58check string
 
 #### Example
 Request:
