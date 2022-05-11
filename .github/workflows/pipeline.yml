@@ -1,4 +1,4 @@
-name: Build and lint
+name: Build, lint and test
 
 on:
     # Triggers the workflow on push or pull request events but only for the main branch
@@ -68,5 +68,5 @@ jobs:
           - name: Generate gRPC
             run: yarn generate
 
-          - name: Lint
+          - name: Test
             run: yarn test
