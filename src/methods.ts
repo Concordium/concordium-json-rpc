@@ -69,7 +69,7 @@ class JsonRpcMethods {
             return invalidParameterError(
                 'The provided transaction hash [' +
                     transactionHash +
-                    '] is not a valid hash',
+                    '] is invalid',
                 callback
             );
         }
