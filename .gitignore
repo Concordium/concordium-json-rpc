@@ -12,3 +12,6 @@ node_modules
 
 # Auto generated gRPC files
 grpc
+
+# Log file
+combined.log
