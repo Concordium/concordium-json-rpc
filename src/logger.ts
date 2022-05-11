@@ -1,4 +1,5 @@
 import winston from 'winston';
+import minimist from 'minimist';
 
 const logger = winston.createLogger({
     level: 'info',
@@ -8,7 +9,7 @@ const logger = winston.createLogger({
     ),
     transports: [
         new winston.transports.File({
-            filename: 'combined.log',
+            filename: minimist(process.argv.slice(2)).logLocation || 'combined.log',
             maxsize: 10000000,
         }),
     ],
