@@ -9,7 +9,8 @@ const logger = winston.createLogger({
     ),
     transports: [
         new winston.transports.File({
-            filename: minimist(process.argv.slice(2)).logLocation || 'combined.log',
+            filename:
+                minimist(process.argv.slice(2)).logLocation || 'combined.log',
             maxsize: 10000000,
         }),
     ],

@@ -51,7 +51,9 @@ app.post('/json-rpc', (req, res, next) => {
             logger.info('Successful request', { correlationId });
             return res.send(response);
         } else {
-            logger.info('Successful request. Sent empty response', { correlationId });
+            logger.info('Successful request. Sent empty response', {
+                correlationId,
+            });
             res.status(204);
             res.send('');
         }
