@@ -1,6 +1,13 @@
 import logger from './logger';
 import minimist from 'minimist';
 import server from './server';
+import JSONbig from 'json-bigint';
+
+// DANGEROUSLY override JSON prototype methods to handle uint64 values (bigint)
+// To avoid this we would have to write our own parser/serializer for the express
+// server.
+JSON.parse = JSONbig.parse;
+JSON.stringify = JSONbig.stringify;
 
 // Parse parameters that defines how to set up the server.
 const argv = minimist(process.argv.slice(2));

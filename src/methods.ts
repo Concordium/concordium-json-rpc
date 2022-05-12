@@ -14,6 +14,11 @@ import {
     isValidHash,
     validateParams,
 } from './validation';
+import JSONbig from 'json-bigint';
+
+function parseJsonResponse(response: Uint8Array) {
+    return JSONbig.parse(JsonResponse.deserializeBinary(response).getValue());
+}
 
 class JsonRpcMethods {
     nodeClient: NodeClient;
@@ -42,10 +47,7 @@ class JsonRpcMethods {
                 accountAddressObject
             )
             .then((result) => {
-                return callback(
-                    null,
-                    JsonResponse.deserializeBinary(result).getValue()
-                );
+                return callback(null, parseJsonResponse(result));
             })
             .catch((e) => callback(e));
     }
@@ -72,10 +74,7 @@ class JsonRpcMethods {
                 transactionHashObject
             )
             .then((result) => {
-                return callback(
-                    null,
-                    JsonResponse.deserializeBinary(result).getValue()
-                );
+                return callback(null, parseJsonResponse(result));
             })
             .catch((e) => callback(e));
     }
