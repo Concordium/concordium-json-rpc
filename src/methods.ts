@@ -7,15 +7,12 @@ import {
     TransactionHash,
 } from '../grpc/concordium_p2p_rpc_pb';
 import NodeClient from './client';
-import {
-    invalidParameterError,
-    missingParameterError,
-    nodeError,
-} from './errors';
+import { invalidParameterError, nodeError } from './errors';
 import {
     isValidAccountAddress,
     isValidBase64,
     isValidHash,
+    validateParams,
 } from './validation';
 
 class JsonRpcMethods {
@@ -26,17 +23,12 @@ class JsonRpcMethods {
     }
 
     async getNextAccountNonce(
-        params: { address: string },
+        address: string,
         callback: JSONRPCCallbackTypePlain
     ) {
-        const address = params.address;
-        if (address === undefined) {
-            return missingParameterError('address', callback);
-        } else if (!isValidAccountAddress(address)) {
+        if (!isValidAccountAddress(address)) {
             return invalidParameterError(
-                'The provided account address [' +
-                    params.address +
-                    '] is invalid',
+                'The provided account address [' + address + '] is invalid',
                 callback
             );
         }
@@ -59,13 +51,10 @@ class JsonRpcMethods {
     }
 
     getTransactionStatus(
-        params: { transactionHash: string },
+        transactionHash: string,
         callback: JSONRPCCallbackTypePlain
     ) {
-        const transactionHash = params.transactionHash;
-        if (transactionHash === undefined) {
-            return missingParameterError('transactionHash', callback);
-        } else if (!isValidHash(transactionHash)) {
+        if (!isValidHash(transactionHash)) {
             return invalidParameterError(
                 'The provided transaction hash [' +
                     transactionHash +
@@ -92,13 +81,10 @@ class JsonRpcMethods {
     }
 
     sendAccountTransaction(
-        params: { transaction: string },
+        transaction: string,
         callback: JSONRPCCallbackTypePlain
     ) {
-        const transaction = params.transaction;
-        if (transaction === undefined) {
-            return missingParameterError('transaction', callback);
-        } else if (!isValidBase64(transaction)) {
+        if (!isValidBase64(transaction)) {
             return invalidParameterError(
                 'The provided transaction [' +
                     transaction +
@@ -136,14 +122,23 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
         getNextAccountNonce: (
             params: { address: string },
             callback: JSONRPCCallbackTypePlain
-        ) => jsonRpcMethods.getNextAccountNonce(params, callback),
+        ) =>
+            validateParams(params, ['address'], callback) &&
+            jsonRpcMethods.getNextAccountNonce(params.address, callback),
         getTransactionStatus: (
             params: { transactionHash: string },
             callback: JSONRPCCallbackTypePlain
-        ) => jsonRpcMethods.getTransactionStatus(params, callback),
+        ) =>
+            validateParams(params, ['transactionHash'], callback) &&
+            jsonRpcMethods.getTransactionStatus(
+                params.transactionHash,
+                callback
+            ),
         sendAccountTransaction: (
             params: { transaction: string },
             callback: JSONRPCCallbackTypePlain
-        ) => jsonRpcMethods.sendAccountTransaction(params, callback),
+        ) =>
+            validateParams(params, ['transaction'], callback) &&
+            jsonRpcMethods.sendAccountTransaction(params.transaction, callback),
     };
 }
