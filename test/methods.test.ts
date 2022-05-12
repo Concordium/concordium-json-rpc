@@ -17,6 +17,19 @@ afterAll(() => {
     jsonRpcServer.close();
 });
 
+test('missing params fails', async () => {
+    const addressRequestWithMissingParam = createRequest('getNextAccountNonce');
+    const response = await request(app)
+        .post('/json-rpc')
+        .send(addressRequestWithMissingParam);
+
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe(-32602);
+    expect(response.body.error.message).toContain(
+        "The 'params' object is missing"
+    );
+});
+
 test('get next account nonce with missing address fails', async () => {
     const addressRequestWithMissingParam = createRequest(
         'getNextAccountNonce',
