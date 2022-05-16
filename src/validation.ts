@@ -1,4 +1,6 @@
 import { AccountAddress } from '@concordium/node-sdk';
+import { JSONRPCCallbackTypePlain } from 'jayson';
+import { invalidParameterError, missingParameterError } from './errors';
 
 /**
  * Checks if the input string is a valid hexadecimal string.
@@ -45,4 +47,32 @@ export function isValidBase64(input: string): boolean {
     const base64Regex =
         /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
     return base64Regex.test(input);
+}
+
+/**
+ * Validates parameters of a request and returns a corresponding error if the parameter
+ * object is missing or if an expected key is not present in the params object.
+ * @param params the parameters to validate
+ * @param keys the keys that are expected to be present in the params object
+ * @param callback the jayson callback function
+ * @returns true if the parameters validated as expected, otherwise false
+ */
+export function validateParams<T, K extends keyof T>(
+    params: T,
+    keys: K[],
+    callback: JSONRPCCallbackTypePlain
+): boolean {
+    if (params === undefined) {
+        invalidParameterError("The 'params' object is missing", callback);
+        return false;
+    }
+
+    for (const key of keys) {
+        if (params[key] === undefined) {
+            missingParameterError(key as string, callback);
+            return false;
+        }
+    }
+
+    return true;
 }
