@@ -13,6 +13,18 @@ yarn build
 ```
 If you have already generated the gRPC files, then you only need to run the build step and can safely skip the generate step.
 
+# Build  and run the Docker image
+To build the docker image run the following:
+```
+docker build -t concordium-json-rpc .
+```
+When running the image you specify the port to use and the settings that the server should use
+when connecting to a Concordium node:
+```
+docker run -p 11900:11900 -e PORT=11900 -e NODE_ADDRESS=service.internal.stagenet.concordium.com -e NODE_PORT=10000 -e NODE_TIMEOUT=15000 concordium-json-rpc
+```
+If you do not specify an environment variable, then a default value is used instead.
+
 # Run server
 When the project has been built you can run it locally with node with the following command:
 ```
