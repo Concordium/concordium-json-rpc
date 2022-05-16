@@ -20,7 +20,7 @@ afterAll(() => {
 test('missing params fails', async () => {
     const addressRequestWithMissingParam = createRequest('getNextAccountNonce');
     const response = await request(app)
-        .post('/json-rpc')
+        .post('/')
         .send(addressRequestWithMissingParam);
 
     expect(response.status).toBe(400);
@@ -36,7 +36,7 @@ test('get next account nonce with missing address fails', async () => {
         { someWrongParam: 'value' }
     );
     const response = await request(app)
-        .post('/json-rpc')
+        .post('/')
         .send(addressRequestWithMissingParam);
 
     expect(response.status).toBe(400);
@@ -52,7 +52,7 @@ test('get next account nonce with invalid address fails', async () => {
         { address: '4RiJakUMX1Ncj7u8AoYTXBGzV4FcGiRu5JZaZijKgY3UMqbwUb' }
     );
     const response = await request(app)
-        .post('/json-rpc')
+        .post('/')
         .send(addressRequestWithInvalidAddress);
 
     expect(response.status).toBe(400);
@@ -69,7 +69,7 @@ test('get transaction status with missing transaction hash fails', async () => {
         { someWrongParam: 'value' }
     );
     const response = await request(app)
-        .post('/json-rpc')
+        .post('/')
         .send(transactionStatusRequestWithMissingParam);
 
     expect(response.status).toBe(400);
@@ -85,7 +85,7 @@ test('get transaction status with invalid transaction hash fails', async () => {
         { transactionHash: 'ThisIsNotAValidTransactionHash' }
     );
     const response = await request(app)
-        .post('/json-rpc')
+        .post('/')
         .send(transactionStatusRequestWithInvalidParam);
 
     expect(response.status).toBe(400);
@@ -102,7 +102,7 @@ test('send an account transaction with missing transaction fails', async () => {
         { someWrongParam: 'value!' }
     );
     const response = await request(app)
-        .post('/json-rpc')
+        .post('/')
         .send(sendAccountTransactionWithInvalidTransaction);
 
     expect(response.status).toBe(400);
@@ -118,7 +118,7 @@ test('send an account transaction with a wrong encoding fails', async () => {
         { transaction: 'ThisIsNotBase64Encoded!' }
     );
     const response = await request(app)
-        .post('/json-rpc')
+        .post('/')
         .send(sendAccountTransactionWithInvalidTransaction);
 
     expect(response.status).toBe(400);

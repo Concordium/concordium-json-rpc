@@ -26,7 +26,7 @@ export default (
 
     const app = express();
     app.use(express.json());
-    app.post('/json-rpc', (req, res, next) => {
+    app.post('/', (req, res, next) => {
         const correlationId = uuidv4();
         const request = req.body;
         logger.info('Received a request', { correlationId });
