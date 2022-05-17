@@ -15,4 +15,4 @@ COPY deps/concordium-grpc-api ./deps/concordium-grpc-api
 RUN yarn && yarn cache clean
 RUN yarn generate && yarn build
 
-CMD node ./dist/index.js --port ${PORT} --nodeAddress ${NODE_ADDRESS} --nodePort ${NODE_PORT} --nodeTimeout ${NODE_TIMEOUT}
+CMD node ./dist/app.js --port ${PORT} --nodeAddress ${NODE_ADDRESS} --nodePort ${NODE_PORT} --nodeTimeout ${NODE_TIMEOUT}
