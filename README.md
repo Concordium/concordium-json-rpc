@@ -21,7 +21,7 @@ docker build -t concordium-json-rpc .
 When running the image you specify the port to use and the settings that the server should use
 when connecting to a Concordium node:
 ```
-docker run -p 11900:11900 -e PORT=11900 -e NODE_ADDRESS=service.internal.stagenet.concordium.com -e NODE_PORT=10000 -e NODE_TIMEOUT=15000 concordium-json-rpc -v ${PWD}/combined.log:/app/combined.log
+docker run -p 9900:9900 -e PORT=9900 -e NODE_ADDRESS=127.0.0.1 -e NODE_PORT=10000 -e NODE_TIMEOUT=15000 -v ${PWD}/combined.log:/app/combined.log concordium-json-rpc
 ```
 If you do not specify an environment variable, then a default value is used instead. In the example above the logfile from the server is also mounted, so that the logfile can be read and stored on the host system.
 
