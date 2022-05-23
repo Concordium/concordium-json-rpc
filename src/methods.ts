@@ -6,6 +6,7 @@ import {
     JsonResponse,
     SendTransactionRequest,
     TransactionHash,
+    Empty
 } from '../grpc/concordium_p2p_rpc_pb';
 import NodeClient from './client';
 import { invalidParameterError, nodeError } from './errors';
@@ -145,6 +146,16 @@ class JsonRpcMethods {
             })
             .catch((e) => callback(e));
     }
+
+    getConsensusStatus(callback: JSONRPCCallbackTypePlain) {
+        this.nodeClient.sendRequest(
+            this.nodeClient.client.getConsensusStatus,
+            new Empty()
+        ).then((result) => {
+            return callback(null, parseJsonResponse(result));
+        })
+            .catch((e) => callback(e));
+    }
 }
 
 export default function getJsonRpcMethods(nodeClient: NodeClient): {
@@ -184,5 +195,6 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
                 params.address,
                 callback
             ),
+        getConsensusStatus: (_params: {}, callback: JSONRPCCallbackTypePlain) => jsonRpcMethods.getConsensusStatus(callback)
     };
 }
