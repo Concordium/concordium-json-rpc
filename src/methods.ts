@@ -113,7 +113,11 @@ class JsonRpcMethods {
             .catch((e) => nodeError(e, callback));
     }
 
-    getInstanceInfo(blockHash: string, address: string, callback: JSONRPCCallbackTypePlain) {
+    getInstanceInfo(
+        blockHash: string,
+        address: string,
+        callback: JSONRPCCallbackTypePlain
+    ) {
         if (!isValidContractAddress(address)) {
             return invalidParameterError(
                 'The provided contract address [' + address + '] is invalid',
@@ -131,9 +135,14 @@ class JsonRpcMethods {
         getAddressInfoRequest.setAddress(address);
         getAddressInfoRequest.setBlockHash(blockHash);
 
-        this.nodeClient.sendRequest(this.nodeClient.client.getInstanceInfo, getAddressInfoRequest).then((result) => {
-            return callback(null, parseJsonResponse(result));
-        })
+        this.nodeClient
+            .sendRequest(
+                this.nodeClient.client.getInstanceInfo,
+                getAddressInfoRequest
+            )
+            .then((result) => {
+                return callback(null, parseJsonResponse(result));
+            })
             .catch((e) => callback(e));
     }
 }
@@ -166,10 +175,14 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
             validateParams(params, ['transaction'], callback) &&
             jsonRpcMethods.sendAccountTransaction(params.transaction, callback),
         getInstanceInfo: (
-            params: { blockHash: string, address: string},
+            params: { blockHash: string; address: string },
             callback: JSONRPCCallbackTypePlain
         ) =>
             validateParams(params, ['blockHash', 'address'], callback) &&
-            jsonRpcMethods.getInstanceInfo(params.blockHash, params.address, callback),
+            jsonRpcMethods.getInstanceInfo(
+                params.blockHash,
+                params.address,
+                callback
+            ),
     };
 }

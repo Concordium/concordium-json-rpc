@@ -35,7 +35,6 @@ export function isValidAccountAddress(address: string): boolean {
     }
 }
 
-
 /**
  * Checks whether an address is a valid address for a Concordium
  * contract.
@@ -45,7 +44,10 @@ export function isValidAccountAddress(address: string): boolean {
 export function isValidContractAddress(address: string): boolean {
     try {
         const parsed = JSON.parse(address);
-        return BigInt(parsed.index) !== undefined && BigInt(parsed.subindex) !== undefined;
+        return (
+            BigInt(parsed.index) !== undefined &&
+            BigInt(parsed.subindex) !== undefined
+        );
     } catch {
         return false;
     }
