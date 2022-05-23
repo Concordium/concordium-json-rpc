@@ -35,6 +35,22 @@ export function isValidAccountAddress(address: string): boolean {
     }
 }
 
+
+/**
+ * Checks whether an address is a valid address for a Concordium
+ * contract.
+ * @param address the address to validate
+ * @returns true if the address is valid, otherwise false
+ */
+export function isValidContractAddress(address: string): boolean {
+    try {
+        const parsed = JSON.parse(address);
+        return BigInt(parsed.index) !== undefined && BigInt(parsed.subindex) !== undefined;
+    } catch {
+        return false;
+    }
+}
+
 /**
  * Checks whether a string is a valid non-empty base64 encoded string.
  * @param input the string to validate as being base64

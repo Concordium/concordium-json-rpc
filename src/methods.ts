@@ -2,6 +2,7 @@ import { JSONRPCCallbackTypePlain, MethodLike } from 'jayson';
 import {
     AccountAddress,
     BoolResponse,
+    GetAddressInfoRequest,
     JsonResponse,
     SendTransactionRequest,
     TransactionHash,
@@ -11,6 +12,7 @@ import { invalidParameterError, nodeError } from './errors';
 import {
     isValidAccountAddress,
     isValidBase64,
+    isValidContractAddress,
     isValidHash,
     validateParams,
 } from './validation';
@@ -110,6 +112,30 @@ class JsonRpcMethods {
             })
             .catch((e) => nodeError(e, callback));
     }
+
+    getInstanceInfo(blockHash: string, address: string, callback: JSONRPCCallbackTypePlain) {
+        if (!isValidContractAddress(address)) {
+            return invalidParameterError(
+                'The provided contract address [' + address + '] is invalid',
+                callback
+            );
+        }
+        if (!isValidHash(blockHash)) {
+            return invalidParameterError(
+                'The provided blockHash [' + blockHash + '] is invalid',
+                callback
+            );
+        }
+
+        const getAddressInfoRequest = new GetAddressInfoRequest();
+        getAddressInfoRequest.setAddress(address);
+        getAddressInfoRequest.setBlockHash(blockHash);
+
+        this.nodeClient.sendRequest(this.nodeClient.client.getInstanceInfo, getAddressInfoRequest).then((result) => {
+            return callback(null, parseJsonResponse(result));
+        })
+            .catch((e) => callback(e));
+    }
 }
 
 export default function getJsonRpcMethods(nodeClient: NodeClient): {
@@ -139,5 +165,11 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
         ) =>
             validateParams(params, ['transaction'], callback) &&
             jsonRpcMethods.sendAccountTransaction(params.transaction, callback),
+        getInstanceInfo: (
+            params: { blockHash: string, address: string},
+            callback: JSONRPCCallbackTypePlain
+        ) =>
+            validateParams(params, ['blockHash', 'address'], callback) &&
+            jsonRpcMethods.getInstanceInfo(params.blockHash, params.address, callback),
     };
 }
