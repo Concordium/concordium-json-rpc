@@ -6,6 +6,7 @@ import NodeClient from './client';
 import getJsonRpcMethods from './methods';
 import logger from './logger';
 import { v4 as uuidv4 } from 'uuid';
+import cors from 'cors';
 
 export default (
     nodeAddress: string,
@@ -25,6 +26,7 @@ export default (
     const server = new jayson.Server(getJsonRpcMethods(nodeClient));
 
     const app = express();
+    app.use(cors());
     app.use(express.json());
     app.post('/', (req, res, next) => {
         const correlationId = uuidv4();
