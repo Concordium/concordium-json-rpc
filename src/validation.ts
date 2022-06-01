@@ -38,16 +38,16 @@ export function isValidAccountAddress(address: string): boolean {
 /**
  * Checks whether an address is a valid address for a Concordium
  * contract.
- * @param address the address to validate
+ * @param index the index of the contract
+ * @param subindex the subindex of the contract
  * @returns true if the address is valid, otherwise false
  */
-export function isValidContractAddress(address: string): boolean {
+export function isValidContractAddress(
+    index: bigint | number | string,
+    subindex: bigint | number | string
+): boolean {
     try {
-        const parsed = JSON.parse(address);
-        return (
-            BigInt(parsed.index) !== undefined &&
-            BigInt(parsed.subindex) !== undefined
-        );
+        return BigInt(index) >= 0n && BigInt(subindex) >= 0;
     } catch {
         return false;
     }

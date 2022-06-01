@@ -116,12 +116,17 @@ class JsonRpcMethods {
 
     getInstanceInfo(
         blockHash: string,
-        address: string,
+        index: bigint | number | string,
+        subindex: bigint | number | string,
         callback: JSONRPCCallbackTypePlain
     ) {
-        if (!isValidContractAddress(address)) {
+        if (!isValidContractAddress(index, subindex)) {
             return invalidParameterError(
-                'The provided contract address [' + address + '] is invalid',
+                'The provided contract address { index: ' +
+                    index +
+                    ', subindex: ' +
+                    subindex +
+                    '} is invalid',
                 callback
             );
         }
@@ -133,7 +138,9 @@ class JsonRpcMethods {
         }
 
         const getAddressInfoRequest = new GetAddressInfoRequest();
-        getAddressInfoRequest.setAddress(address);
+        getAddressInfoRequest.setAddress(
+            JSON.stringify({ index: BigInt(index), subindex: BigInt(subindex) })
+        );
         getAddressInfoRequest.setBlockHash(blockHash);
 
         this.nodeClient
@@ -185,13 +192,22 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
             validateParams(params, ['transaction'], callback) &&
             jsonRpcMethods.sendAccountTransaction(params.transaction, callback),
         getInstanceInfo: (
-            params: { blockHash: string; address: string },
+            params: {
+                blockHash: string;
+                index: bigint | number | string;
+                subindex: bigint | number | string;
+            },
             callback: JSONRPCCallbackTypePlain
         ) =>
-            validateParams(params, ['blockHash', 'address'], callback) &&
+            validateParams(
+                params,
+                ['blockHash', 'index', 'subindex'],
+                callback
+            ) &&
             jsonRpcMethods.getInstanceInfo(
                 params.blockHash,
-                params.address,
+                params.index,
+                params.subindex,
                 callback
             ),
         getConsensusStatus: (
