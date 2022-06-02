@@ -3,7 +3,12 @@
 The Concordium JSON-RPC proxy server is a small server that acts as a wrapper for the gRPC interface exposed by the Concordium node.
 
 # Build
-To build the project first generate the gRPC files:
+Before building the project for the first time, remember to initialize submodules:
+```
+git submodule update --init
+```
+
+Then generate the gRPC files:
 ```
 yarn generate
 ```
@@ -11,9 +16,14 @@ and then run the actual build:
 ```
 yarn build
 ```
-If you have already generated the gRPC files, then you only need to run the build step and can safely skip the generate step.
+If you have already generated the gRPC files, then you only need to run the build step and can safely skip the previous steps.
 
 # Build  and run the Docker image
+Before building the image for the first time, remember to initialize submodules:
+```
+git submodule update --init
+```
+
 To build the docker image run the following:
 ```
 docker build -t concordium-json-rpc .
