@@ -121,3 +121,46 @@ Response:
     "result": true
 }
 ```
+
+### getInstanceInfo
+
+Returns information about the specified smart contract instance.
+
+#### Parameters
+- `blockHash` - hex encoding of a block's hash
+- `index` - the index of the smart contract instance (uint64)
+- `subindex` - the subindex of the smart contract instance (uint64)
+
+#### Example
+Request:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getInstanceInfo",
+    "params": {
+        "blockHash": "22aa0c3e223fd16a830a75aeabb78c0c3e5f1bed15b7e530272bfd2901d8a097",
+        "index": 1,
+        "subindex": 0
+    }
+}
+```
+Response:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "model": "0000000000",
+        "owner": "3DJoe7aUwMwVmdFdRU2QsnJfsBbCmQu1QHvEg7YtWFZWmsoBXe",
+        "amount": "0",
+        "methods": [
+            "counter.receive",
+            "counter.receive_optimized"
+        ],
+        "name": "init_counter",
+        "sourceModule": "7f60dc4d93e491750ed09d2abb379286c5af6f4aca2310c0b09c3275e181f4a4",
+        "version": 0
+    }
+}
+```
