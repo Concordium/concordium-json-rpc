@@ -43,8 +43,8 @@ export function isValidAccountAddress(address: string): boolean {
  * @returns true if the address is valid, otherwise false
  */
 export function isValidContractAddress(
-    index: bigint | number | string,
-    subindex: bigint | number | string
+    index: bigint | number,
+    subindex: bigint | number
 ): boolean {
     try {
         return BigInt(index) >= 0n && BigInt(subindex) >= 0;

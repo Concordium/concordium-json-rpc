@@ -116,8 +116,8 @@ class JsonRpcMethods {
 
     getInstanceInfo(
         blockHash: string,
-        index: bigint | number | string,
-        subindex: bigint | number | string,
+        index: bigint | number,
+        subindex: bigint | number,
         callback: JSONRPCCallbackTypePlain
     ) {
         if (!isValidContractAddress(index, subindex)) {
@@ -194,8 +194,8 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
         getInstanceInfo: (
             params: {
                 blockHash: string;
-                index: bigint | number | string;
-                subindex: bigint | number | string;
+                index: bigint | number;
+                subindex: bigint | number;
             },
             callback: JSONRPCCallbackTypePlain
         ) =>
