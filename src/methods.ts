@@ -8,18 +8,45 @@ import {
     SendTransactionRequest,
     TransactionHash,
     Empty,
+    InvokeContractRequest,
 } from '../grpc/concordium_p2p_rpc_pb';
 import NodeClient from './client';
 import { invalidParameterError, nodeError } from './errors';
 import {
+    isHex,
     isValidAccountAddress,
     isValidBase64,
     isValidCredentialId,
     isValidHash,
     isValidUInt64,
+    isValidContractAddress,
     validateParams,
 } from './validation';
 import JSONbig from 'json-bigint';
+
+type ContractAddress = {
+    index: number | bigint;
+    subindex: number | bigint;
+};
+type Invoker =
+    | {
+          type: 'AddressContract';
+          address: ContractAddress;
+      }
+    | {
+          type: 'AddressAccount';
+          address: string;
+      }
+    | null;
+
+interface ContractContext {
+    contract: ContractAddress;
+    method: string;
+    invoker?: Invoker;
+    amount?: bigint | number;
+    parameter?: string;
+    energy?: bigint | number;
+}
 
 function parseJsonResponse(response: Uint8Array) {
     return JSONbig.parse(JsonResponse.deserializeBinary(response).getValue());
@@ -124,17 +151,17 @@ class JsonRpcMethods {
     ) {
         if (!isValidUInt64(index)) {
             return invalidParameterError(
-                'The provided contract index ' +
+                'The provided contract index [' +
                     JSON.stringify(index) +
-                    ' is not a valid unsigned 64 bit integer.',
+                    '] is not a valid unsigned 64 bit integer',
                 callback
             );
         }
         if (!isValidUInt64(subindex)) {
             return invalidParameterError(
-                'The provided contract subindex ' +
+                'The provided contract subindex [' +
                     JSON.stringify(subindex) +
-                    ' is not a valid unsigned 64 bit integer.',
+                    '] is not a valid unsigned 64 bit integer',
                 callback
             );
         }
@@ -226,6 +253,79 @@ class JsonRpcMethods {
             .then((result) => callback(null, parseJsonResponse(result)))
             .catch((e) => callback(e));
     }
+
+    invokeContract(
+        blockHash: string,
+        context: ContractContext,
+        callback: JSONRPCCallbackTypePlain
+    ) {
+        if (!isValidHash(blockHash)) {
+            return invalidParameterError(
+                'The provided blockHash [' + blockHash + '] is invalid',
+                callback
+            );
+        }
+        if (!isValidContractAddress(context.contract)) {
+            return invalidParameterError(
+                'The provided contract address [' +
+                    JSON.stringify(context.contract) +
+                    '] for the contract is invalid',
+                callback
+            );
+        }
+        if (
+            context.invoker &&
+            ((context.invoker.type !== 'AddressContract' &&
+                context.invoker.type !== 'AddressAccount') ||
+                (context.invoker.type === 'AddressContract' &&
+                    !isValidContractAddress(context.invoker.address)) ||
+                (context.invoker.type === 'AddressAccount' &&
+                    !isValidAccountAddress(context.invoker.address)))
+        ) {
+            return invalidParameterError(
+                'The provided invoker [' +
+                    JSON.stringify(context.invoker) +
+                    '] is invalid',
+                callback
+            );
+        }
+        if (context.amount && !isValidUInt64(context.amount)) {
+            return invalidParameterError(
+                'The provided microCCD amount [' +
+                    JSON.stringify(context.amount) +
+                    ']  is not a valid unsigned 64 bit integer',
+                callback
+            );
+        }
+        if (context.energy && !isValidUInt64(context.energy)) {
+            return invalidParameterError(
+                'The provided energy [' +
+                    JSON.stringify(context.energy) +
+                    '] is not a valid unsigned 64 bit integer',
+                callback
+            );
+        }
+        if (context.parameter && !isHex(context.parameter)) {
+            return invalidParameterError(
+                'The provided parameter [' +
+                    context.parameter +
+                    '] is not a valid hex string',
+                callback
+            );
+        }
+
+        const requestObject = new InvokeContractRequest();
+        requestObject.setBlockHash(blockHash);
+        // Amount is expected to be a string, unlike other uint64 values.
+        requestObject.setContext(JSON.stringify({...context, amount: context.amount && context.amount.toString() }));
+
+        this.nodeClient
+            .sendRequest(this.nodeClient.client.invokeContract, requestObject)
+            .then((result) => {
+                return callback(null, parseJsonResponse(result));
+            })
+            .catch((e) => callback(e));
+    }
 }
 
 export default function getJsonRpcMethods(nodeClient: NodeClient): {
@@ -295,6 +395,17 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
             validateParams(params, ['blockHash'], callback) &&
             jsonRpcMethods.getCryptographicParameters(
                 params.blockHash,
+                callback
+            ),
+        invokeContract: (
+            params: { blockHash: string; context: ContractContext },
+            callback: JSONRPCCallbackTypePlain
+        ) =>
+            validateParams(params, ['blockHash', 'context'], callback) &&
+            validateParams(params.context, ['contract', 'method'], callback) &&
+            jsonRpcMethods.invokeContract(
+                params.blockHash,
+                params.context,
                 callback
             ),
     };
