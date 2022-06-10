@@ -122,6 +122,59 @@ Response:
 }
 ```
 
+### getConsensusStatus
+
+Returns the current status of the chain's consensus layer.
+
+#### Example
+Request:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getConsensusStatus",
+}
+```
+Response:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "bestBlock": "5819344b00adbd8978b0e74043f76663ea78080df36fd0b8fb27931182f77b44",
+        "genesisBlock": "b6078154d6717e909ce0da4a45a25151b592824f31624b755900a74429e3073d",
+        "genesisTime": "2021-05-07T12:00:00Z",
+        "slotDuration": 250,
+        "epochDuration": 3600000,
+        "lastFinalizedBlock": "5819344b00adbd8978b0e74043f76663ea78080df36fd0b8fb27931182f77b44",
+        "bestBlockHeight": 3374215,
+        "lastFinalizedBlockHeight": 3374215,
+        "blocksReceivedCount": 25150,
+        "blockLastReceivedTime": "2022-06-10T07:26:03.210123845Z",
+        "blockReceiveLatencyEMA": 0.22034336143243416,
+        "blockReceiveLatencyEMSD": 0.0864390313167573,
+        "blockReceivePeriodEMA": 14.56057045349122,
+        "blockReceivePeriodEMSD": 12.609771167389637,
+        "blocksVerifiedCount": 25150,
+        "blockLastArrivedTime": "2022-06-10T07:26:03.222477199Z",
+        "blockArriveLatencyEMA": 0.23383788890808027,
+        "blockArriveLatencyEMSD": 0.08616182706879714,
+        "blockArrivePeriodEMA": 14.560443656438371,
+        "blockArrivePeriodEMSD": 12.612616376218636,
+        "transactionsPerBlockEMA": 0.21133968983190163,
+        "transactionsPerBlockEMSD": 0.46090000026424316,
+        "finalizationCount": 21581,
+        "lastFinalizedTime": "2022-06-10T07:26:04.483473798Z",
+        "finalizationPeriodEMA": 16.167798286157375,
+        "finalizationPeriodEMSD": 14.026504502042274,
+        "protocolVersion": 4,
+        "genesisIndex": 3,
+        "currentEraGenesisBlock": "96786a32535daf7da442e7676605877601414450f8bcf468b04ff899bf505db0",
+        "currentEraGenesisTime": "2022-05-23T10:30:20.5Z"
+    }
+}
+```
+
 ### getInstanceInfo
 
 Returns information about the specified smart contract instance.
