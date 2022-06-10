@@ -138,9 +138,7 @@ class JsonRpcMethods {
         }
 
         const getAddressInfoRequest = new GetAddressInfoRequest();
-        getAddressInfoRequest.setAddress(
-            JSON.stringify({ index: BigInt(index), subindex: BigInt(subindex) })
-        );
+        getAddressInfoRequest.setAddress(JSON.stringify({ index, subindex }));
         getAddressInfoRequest.setBlockHash(blockHash);
 
         this.nodeClient
