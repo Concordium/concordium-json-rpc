@@ -9,6 +9,7 @@ import {
     TransactionHash,
     Empty,
     InvokeContractRequest,
+    GetModuleSourceRequest,
 } from '../grpc/concordium_p2p_rpc_pb';
 import NodeClient from './client';
 import { invalidParameterError, nodeError } from './errors';
@@ -183,6 +184,44 @@ class JsonRpcMethods {
             )
             .then((result) => {
                 return callback(null, parseJsonResponse(result));
+            })
+            .catch((e) => callback(e));
+    }
+
+    getModuleSource(
+        blockHash: string,
+        moduleReference: string,
+        callback: JSONRPCCallbackTypePlain
+    ) {
+        if (!isValidHash(blockHash)) {
+            return invalidParameterError(
+                'The provided block hash [' +
+                    blockHash +
+                    '] is invalid',
+                callback
+            );
+        }
+        if (!isValidHash(moduleReference)) {
+            return invalidParameterError(
+                'The provided module reference [' +
+                    moduleReference +
+                    '] is invalid',
+                callback
+            );
+        }
+
+        const moduleSourceRequest = new GetModuleSourceRequest();
+        moduleSourceRequest.setBlockHash(blockHash);
+        moduleSourceRequest.setModuleRef(moduleReference);
+
+        this.nodeClient
+            .sendRequest(
+                this.nodeClient.client.getModuleSource,
+                moduleSourceRequest
+            )
+            .then((result) => {
+                console.log(result);
+                return callback(null, Buffer.from(result).toString('base64'));
             })
             .catch((e) => callback(e));
     }
@@ -408,5 +447,11 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
                 params.context,
                 callback
             ),
+        getModuleSource: (
+            params: { blockHash: string, moduleReference: string },
+            callback: JSONRPCCallbackTypePlain
+        ) =>
+            validateParams(params, ['blockHash', 'moduleReference'], callback) &&
+            jsonRpcMethods.getModuleSource(params.blockHash, params.moduleReference, callback),
     };
 }
