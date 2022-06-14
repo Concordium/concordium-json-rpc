@@ -1,6 +1,7 @@
 import { JSONRPCCallbackTypePlain, MethodLike } from 'jayson';
 import {
     AccountAddress,
+    BlockHash,
     BoolResponse,
     GetAddressInfoRequest,
     JsonResponse,
@@ -202,6 +203,29 @@ class JsonRpcMethods {
             })
             .catch((e) => callback(e));
     }
+
+    getCryptographicParameters(
+        blockHash: string,
+        callback: JSONRPCCallbackTypePlain
+    ) {
+        if (!isValidHash(blockHash)) {
+            return invalidParameterError(
+                'The provided blockHash [' + blockHash + '] is invalid',
+                callback
+            );
+        }
+
+        const blockHashObject = new BlockHash();
+        blockHashObject.setBlockHash(blockHash);
+
+        this.nodeClient
+            .sendRequest(
+                this.nodeClient.client.getCryptographicParameters,
+                blockHashObject
+            )
+            .then((result) => callback(null, parseJsonResponse(result)))
+            .catch((e) => callback(e));
+    }
 }
 
 export default function getJsonRpcMethods(nodeClient: NodeClient): {
@@ -262,6 +286,15 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
             jsonRpcMethods.getAccountInfo(
                 params.blockHash,
                 params.address,
+                callback
+            ),
+        getCryptographicParameters: (
+            params: { blockHash: string },
+            callback: JSONRPCCallbackTypePlain
+        ) =>
+            validateParams(params, ['blockHash'], callback) &&
+            jsonRpcMethods.getCryptographicParameters(
+                params.blockHash,
                 callback
             ),
     };
