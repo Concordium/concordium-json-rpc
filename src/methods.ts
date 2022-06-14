@@ -13,8 +13,8 @@ import { invalidParameterError, nodeError } from './errors';
 import {
     isValidAccountAddress,
     isValidBase64,
-    isValidContractAddress,
     isValidHash,
+    isValidUInt64,
     validateParams,
 } from './validation';
 import JSONbig from 'json-bigint';
@@ -120,13 +120,19 @@ class JsonRpcMethods {
         subindex: bigint | number,
         callback: JSONRPCCallbackTypePlain
     ) {
-        if (!isValidContractAddress(index, subindex)) {
+        if (!isValidUInt64(index)) {
             return invalidParameterError(
-                'The provided contract address { index: ' +
-                    index +
-                    ', subindex: ' +
-                    subindex +
-                    '} is invalid',
+                'The provided contract index ' +
+                    JSON.stringify(index) +
+                    ' is not a valid unsigned 64 bit integer.',
+                callback
+            );
+        }
+        if (!isValidUInt64(subindex)) {
+            return invalidParameterError(
+                'The provided contract subindex ' +
+                    JSON.stringify(subindex) +
+                    ' is not a valid unsigned 64 bit integer.',
                 callback
             );
         }
