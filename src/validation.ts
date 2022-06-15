@@ -35,6 +35,25 @@ export function isValidAccountAddress(address: string): boolean {
     }
 }
 
+const MAX_UINT_64 = 18446744073709551615n; // 2^64 - 1
+
+/**
+ * Checks whether the amount is an integer within the allowed range of a unsigned 64-bit integer.
+ * @param x the number to validate
+ * @returns true if the number is valid, otherwise false
+ */
+export function isValidUInt64(x: bigint | number): boolean {
+    try {
+        return (
+            (typeof x === 'bigint' || typeof x === 'number') &&
+            BigInt(x) >= 0n &&
+            BigInt(x) <= MAX_UINT_64
+        );
+    } catch {
+        return false;
+    }
+}
+
 /**
  * Checks whether a string is a valid non-empty base64 encoded string.
  * @param input the string to validate as being base64

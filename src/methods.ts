@@ -2,9 +2,11 @@ import { JSONRPCCallbackTypePlain, MethodLike } from 'jayson';
 import {
     AccountAddress,
     BoolResponse,
+    GetAddressInfoRequest,
     JsonResponse,
     SendTransactionRequest,
     TransactionHash,
+    Empty,
 } from '../grpc/concordium_p2p_rpc_pb';
 import NodeClient from './client';
 import { invalidParameterError, nodeError } from './errors';
@@ -12,6 +14,7 @@ import {
     isValidAccountAddress,
     isValidBase64,
     isValidHash,
+    isValidUInt64,
     validateParams,
 } from './validation';
 import JSONbig from 'json-bigint';
@@ -110,6 +113,59 @@ class JsonRpcMethods {
             })
             .catch((e) => nodeError(e, callback));
     }
+
+    getInstanceInfo(
+        blockHash: string,
+        index: bigint | number,
+        subindex: bigint | number,
+        callback: JSONRPCCallbackTypePlain
+    ) {
+        if (!isValidUInt64(index)) {
+            return invalidParameterError(
+                'The provided contract index ' +
+                    JSON.stringify(index) +
+                    ' is not a valid unsigned 64 bit integer.',
+                callback
+            );
+        }
+        if (!isValidUInt64(subindex)) {
+            return invalidParameterError(
+                'The provided contract subindex ' +
+                    JSON.stringify(subindex) +
+                    ' is not a valid unsigned 64 bit integer.',
+                callback
+            );
+        }
+        if (!isValidHash(blockHash)) {
+            return invalidParameterError(
+                'The provided blockHash [' + blockHash + '] is invalid',
+                callback
+            );
+        }
+
+        const getAddressInfoRequest = new GetAddressInfoRequest();
+        getAddressInfoRequest.setAddress(JSON.stringify({ index, subindex }));
+        getAddressInfoRequest.setBlockHash(blockHash);
+
+        this.nodeClient
+            .sendRequest(
+                this.nodeClient.client.getInstanceInfo,
+                getAddressInfoRequest
+            )
+            .then((result) => {
+                return callback(null, parseJsonResponse(result));
+            })
+            .catch((e) => callback(e));
+    }
+
+    getConsensusStatus(callback: JSONRPCCallbackTypePlain) {
+        this.nodeClient
+            .sendRequest(this.nodeClient.client.getConsensusStatus, new Empty())
+            .then((result) => {
+                return callback(null, parseJsonResponse(result));
+            })
+            .catch((e) => callback(e));
+    }
 }
 
 export default function getJsonRpcMethods(nodeClient: NodeClient): {
@@ -139,5 +195,28 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
         ) =>
             validateParams(params, ['transaction'], callback) &&
             jsonRpcMethods.sendAccountTransaction(params.transaction, callback),
+        getInstanceInfo: (
+            params: {
+                blockHash: string;
+                index: bigint | number;
+                subindex: bigint | number;
+            },
+            callback: JSONRPCCallbackTypePlain
+        ) =>
+            validateParams(
+                params,
+                ['blockHash', 'index', 'subindex'],
+                callback
+            ) &&
+            jsonRpcMethods.getInstanceInfo(
+                params.blockHash,
+                params.index,
+                params.subindex,
+                callback
+            ),
+        getConsensusStatus: (
+            _params: Record<string, never>,
+            callback: JSONRPCCallbackTypePlain
+        ) => jsonRpcMethods.getConsensusStatus(callback),
     };
 }
