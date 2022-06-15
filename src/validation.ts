@@ -1,4 +1,4 @@
-import { AccountAddress } from '@concordium/node-sdk';
+import { AccountAddress, CredentialRegistrationId } from '@concordium/node-sdk';
 import { JSONRPCCallbackTypePlain } from 'jayson';
 import { invalidParameterError, missingParameterError } from './errors';
 
@@ -49,6 +49,21 @@ export function isValidUInt64(x: bigint | number): boolean {
             BigInt(x) >= 0n &&
             BigInt(x) <= MAX_UINT_64
         );
+    } catch {
+        return false;
+    }
+}
+
+/**
+ * Checks whether the given string is a valid credential registration id for a Concordium
+ * credential.
+ * @param credId the credential registration id
+ * @returns true if the credential id is valid, otherwise false
+ */
+export function isValidCredentialId(credId: string): boolean {
+    try {
+        new CredentialRegistrationId(credId);
+        return true;
     } catch {
         return false;
     }

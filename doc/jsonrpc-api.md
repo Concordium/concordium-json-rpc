@@ -217,3 +217,75 @@ Response:
     }
 }
 ```
+
+### getAccountInfo
+
+Returns the account info of the account that matches the given accountAddress. The address can also be a credentialRegistrationId, in which case it is the account, which the credential is attached to, whose information is returned.
+
+#### Parameters
+- `address` - the account address as a base58check string or a hex encoded credentialRegistrationId.
+- `blockHash` - hex encoding of a block's hash
+
+#### Example
+Request:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getAccountInfo",
+    "params": {
+        "blockHash": "4a5f642404314caafb1a4fb05705134cfdf064718292446abea44d1a29d6606f",
+        "address": "3FVMj8WoA13m8Ha5JhZWfChugrCqbSbkjavU47yauu7a5YKNuP"
+    }
+}
+```
+Response:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "accountNonce": 4,
+        "accountAmount": "1994731867",
+        "accountReleaseSchedule": {
+            "total": "0",
+            "schedule": []
+        },
+        "accountCredentials": {
+            "0": {
+                "value": {
+                    "contents": {
+                        "ipIdentity": 0,
+                        "regId": "95b29f9934384049d78c00eb7ce81f8abe28fabd4875f3c1486b1be0f48104baef5ec5d8b52769937f898db3c00f26c9",
+                        "policy": {
+                            "revealedAttributes": {},
+                            "createdAt": "202206",
+                            "validTo": "202306"
+                        },
+                        "credentialPublicKeys": {
+                            "keys": {
+                                "0": {
+                                    "verifyKey": "9e268d981d02180090d03289c315d10166b6d4730eede7817d56f68f2bcd39d3",
+                                    "schemeId": "Ed25519"
+                                }
+                            },
+                            "threshold": 1
+                        }
+                    },
+                    "type": "initial"
+                },
+                "v": 0
+            }
+        },
+        "accountThreshold": 1,
+        "accountEncryptedAmount": {
+            "incomingAmounts": [],
+            "selfAmount": "c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "startIndex": 0
+        },
+        "accountEncryptionKey": "b14cbfe44a02c6b1f78711176d5f437295367aa4f2a8c2551ee10d25a03adc69d61a332a058971919dad7312e1fc94c595b29f9934384049d78c00eb7ce81f8abe28fabd4875f3c1486b1be0f48104baef5ec5d8b52769937f898db3c00f26c9",
+        "accountIndex": 48,
+        "accountAddress": "3FVMj8WoA13m8Ha5JhZWfChugrCqbSbkjavU47yauu7a5YKNuP"
+    }
+}
+```

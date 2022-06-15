@@ -13,6 +13,7 @@ import { invalidParameterError, nodeError } from './errors';
 import {
     isValidAccountAddress,
     isValidBase64,
+    isValidCredentialId,
     isValidHash,
     isValidUInt64,
     validateParams,
@@ -166,6 +167,41 @@ class JsonRpcMethods {
             })
             .catch((e) => callback(e));
     }
+
+    getAccountInfo(
+        blockHash: string,
+        address: string,
+        callback: JSONRPCCallbackTypePlain
+    ) {
+        if (!isValidHash(blockHash)) {
+            return invalidParameterError(
+                'The provided blockHash [' + blockHash + '] is invalid',
+                callback
+            );
+        }
+        if (!isValidAccountAddress(address) && !isValidCredentialId(address)) {
+            return invalidParameterError(
+                'The provided address [' +
+                    address +
+                    '] is not a valid account address or credential registration id',
+                callback
+            );
+        }
+
+        const getAddressInfoRequest = new GetAddressInfoRequest();
+        getAddressInfoRequest.setAddress(address);
+        getAddressInfoRequest.setBlockHash(blockHash);
+
+        this.nodeClient
+            .sendRequest(
+                this.nodeClient.client.getAccountInfo,
+                getAddressInfoRequest
+            )
+            .then((result) => {
+                return callback(null, parseJsonResponse(result));
+            })
+            .catch((e) => callback(e));
+    }
 }
 
 export default function getJsonRpcMethods(nodeClient: NodeClient): {
@@ -218,5 +254,15 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
             _params: Record<string, never>,
             callback: JSONRPCCallbackTypePlain
         ) => jsonRpcMethods.getConsensusStatus(callback),
+        getAccountInfo: (
+            params: { address: string; blockHash: string },
+            callback: JSONRPCCallbackTypePlain
+        ) =>
+            validateParams(params, ['address', 'blockHash'], callback) &&
+            jsonRpcMethods.getAccountInfo(
+                params.blockHash,
+                params.address,
+                callback
+            ),
     };
 }
