@@ -317,7 +317,12 @@ class JsonRpcMethods {
         const requestObject = new InvokeContractRequest();
         requestObject.setBlockHash(blockHash);
         // Amount is expected to be a string, unlike other uint64 values.
-        requestObject.setContext(JSON.stringify({...context, amount: context.amount && context.amount.toString() }));
+        requestObject.setContext(
+            JSON.stringify({
+                ...context,
+                amount: context.amount && context.amount.toString(),
+            })
+        );
 
         this.nodeClient
             .sendRequest(this.nodeClient.client.invokeContract, requestObject)
