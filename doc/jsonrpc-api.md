@@ -289,3 +289,39 @@ Response:
     }
 }
 ```
+
+### getCryptographicParameters
+
+Returns information about the cryptographic parameters on the chain, at the specified block. Note that this result is versioned (using the v field).
+For version 0 the result includes the `bulletproofGenerator`, `onChainCommitmentKey` and `genesisString`.
+
+#### Parameters
+- `blockHash` - hex encoding of a block's hash
+
+#### Example
+Request:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "getCryptographicParameters",
+    "params": {
+        "blockHash": "636bdef04778d777b4df989a0655f5b8b100a83b8c9f7df92e5e9c80b98864db"
+    }
+}
+```
+Response (values omitted for brevity):
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "value": {
+            "bulletproofGenerators": "...",
+            "onChainCommitmentKey": "...",
+            "genesisString": "Concordium Mainnet Genesis Version 1"
+        },
+        "v": 0
+    }
+}
+```
