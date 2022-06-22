@@ -320,7 +320,7 @@ class JsonRpcMethods {
         requestObject.setContext(
             JSON.stringify({
                 ...context,
-                amount: context.amount && context.amount.toString(),
+                amount: context.amount?.toString(),
             })
         );
 
