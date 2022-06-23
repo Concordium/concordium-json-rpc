@@ -177,8 +177,8 @@ Response:
 
 ### getModuleSource
 
-Returns the source of the specified at the specified block.
-This will return an empty result, if no module on chain corresponds to the specified reference, otherwise it returns the source of module `base64` encoded.
+Returns the source of the specified module at the given block.
+This will return an empty result if no module on the chain corresponds to the specified reference, otherwise it returns the source of the module `base64` encoded.
 
 #### Parameters
 - `blockHash` - hex encoding of a block's hash
