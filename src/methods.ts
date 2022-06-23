@@ -79,9 +79,7 @@ class JsonRpcMethods {
                 this.nodeClient.client.getNextAccountNonce,
                 accountAddressObject
             )
-            .then((result) => {
-                return callback(null, parseJsonResponse(result));
-            })
+            .then((result) => callback(null, parseJsonResponse(result)))
             .catch((e) => callback(e));
     }
 
@@ -106,9 +104,7 @@ class JsonRpcMethods {
                 this.nodeClient.client.getTransactionStatus,
                 transactionHashObject
             )
-            .then((result) => {
-                return callback(null, parseJsonResponse(result));
-            })
+            .then((result) => callback(null, parseJsonResponse(result)))
             .catch((e) => callback(e));
     }
 
@@ -135,12 +131,12 @@ class JsonRpcMethods {
                 this.nodeClient.client.sendTransaction,
                 sendTransactionRequest
             )
-            .then((result) => {
-                return callback(
+            .then((result) =>
+                callback(
                     null,
                     BoolResponse.deserializeBinary(result).getValue()
-                );
-            })
+                )
+            )
             .catch((e) => nodeError(e, callback));
     }
 
@@ -182,9 +178,7 @@ class JsonRpcMethods {
                 this.nodeClient.client.getInstanceInfo,
                 getAddressInfoRequest
             )
-            .then((result) => {
-                return callback(null, parseJsonResponse(result));
-            })
+            .then((result) => callback(null, parseJsonResponse(result)))
             .catch((e) => callback(e));
     }
 
@@ -195,9 +189,7 @@ class JsonRpcMethods {
     ) {
         if (!isValidHash(blockHash)) {
             return invalidParameterError(
-                'The provided block hash [' +
-                    blockHash +
-                    '] is invalid',
+                'The provided block hash [' + blockHash + '] is invalid',
                 callback
             );
         }
@@ -219,19 +211,16 @@ class JsonRpcMethods {
                 this.nodeClient.client.getModuleSource,
                 moduleSourceRequest
             )
-            .then((result) => {
-                console.log(result);
-                return callback(null, Buffer.from(result).toString('base64'));
-            })
+            .then((result) =>
+                callback(null, Buffer.from(result).toString('base64'))
+            )
             .catch((e) => callback(e));
     }
 
     getConsensusStatus(callback: JSONRPCCallbackTypePlain) {
         this.nodeClient
             .sendRequest(this.nodeClient.client.getConsensusStatus, new Empty())
-            .then((result) => {
-                return callback(null, parseJsonResponse(result));
-            })
+            .then((result) => callback(null, parseJsonResponse(result)))
             .catch((e) => callback(e));
     }
 
@@ -264,9 +253,7 @@ class JsonRpcMethods {
                 this.nodeClient.client.getAccountInfo,
                 getAddressInfoRequest
             )
-            .then((result) => {
-                return callback(null, parseJsonResponse(result));
-            })
+            .then((result) => callback(null, parseJsonResponse(result)))
             .catch((e) => callback(e));
     }
 
@@ -356,13 +343,16 @@ class JsonRpcMethods {
         const requestObject = new InvokeContractRequest();
         requestObject.setBlockHash(blockHash);
         // Amount is expected to be a string, unlike other uint64 values.
-        requestObject.setContext(JSON.stringify({...context, amount: context.amount && context.amount.toString() }));
+        requestObject.setContext(
+            JSON.stringify({
+                ...context,
+                amount: context.amount && context.amount.toString(),
+            })
+        );
 
         this.nodeClient
             .sendRequest(this.nodeClient.client.invokeContract, requestObject)
-            .then((result) => {
-                return callback(null, parseJsonResponse(result));
-            })
+            .then((result) => callback(null, parseJsonResponse(result)))
             .catch((e) => callback(e));
     }
 }
@@ -448,10 +438,18 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
                 callback
             ),
         getModuleSource: (
-            params: { blockHash: string, moduleReference: string },
+            params: { blockHash: string; moduleReference: string },
             callback: JSONRPCCallbackTypePlain
         ) =>
-            validateParams(params, ['blockHash', 'moduleReference'], callback) &&
-            jsonRpcMethods.getModuleSource(params.blockHash, params.moduleReference, callback),
+            validateParams(
+                params,
+                ['blockHash', 'moduleReference'],
+                callback
+            ) &&
+            jsonRpcMethods.getModuleSource(
+                params.blockHash,
+                params.moduleReference,
+                callback
+            ),
     };
 }
