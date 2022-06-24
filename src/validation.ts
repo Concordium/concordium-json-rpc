@@ -54,6 +54,17 @@ export function isValidUInt64(x: bigint | number): boolean {
     }
 }
 
+export function isValidContractAddress(address: {
+    index: bigint | number;
+    subindex: bigint | number;
+}): boolean {
+    try {
+        return isValidUInt64(address.index) && isValidUInt64(address.subindex);
+    } catch {
+        return false;
+    }
+}
+
 /**
  * Checks whether the given string is a valid credential registration id for a Concordium
  * credential.
