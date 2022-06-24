@@ -364,14 +364,16 @@ Simulates a smart contract update, and returns information about the specified s
 #### Parameters
 - `blockHash` - hex encoding of a block's hash
 - `context` - a collection of parameters used to invoke a contract
-- `context.contract` - contains the index and subindex of the smart contract instance that should be invoked
-- `context.method` - the name of the method of the smart contract instance that should be invoked  (uint64)
-- `context.invoker` - (Optional) contains either an account address or the index and subindex of a smart contract instance.
-- `context.parameter` - (Optional) the serialized parameter for the invoked function, defaults to no parameters.
-- `context.amount` - (Optional) the amount of microCCD's to transfer to the contract, defaults to `0`. (uint64)
-- `context.energy` - (Optional) the maximum amount of energy allowed in the execution of the contract, defaults to `10.000.000`.  (uint64)
+- `context.contract.index` - the index of the smart contract instance that should be invoked
+- `context.contract.subindex` - the subindex of the smart contract instance that should be invoked
+- `context.method` - the name of the method on the smart contract instance that should be invoked
+- `context.invoker` - (Optional) contains either an account address or the index and subindex of a smart contract instance
+- `context.parameter` - (Optional) the serialized parameter encoded as hex for the invoked function, defaults to no parameters
+- `context.amount` - (Optional) the amount of microCCD's to transfer to the contract, defaults to `0` (uint64)
+- `context.energy` - (Optional) the maximum amount of energy allowed in the execution of the contract, defaults to `10.000.000` (uint64)
 
 #### Example
+##### Using an account as the invoker
 Request:
 ```json
 {
@@ -379,17 +381,19 @@ Request:
     "id": 1,
     "method": "invokeContract",
     "params": {
-        "blockHash": "22aa0c3e223fd16a830a75aeabb78c0c3e5f1bed15b7e530272bfd2901d8a097",
+        "blockHash": "a9ce1666a82411be7c3c3f8e18001227d6c19567f399fb7e88af856b43b51b3a",
         "context": {
             "method": "PiggyBank.view",
             "contract": {
-                "index": 5102,
+                "index": 81,
                 "subindex": 0
             },
             "invoker": {
                 "type": "AddressAccount",
-                "address": "3DJoe7aUwMwVmdFdRU2QsnJfsBbCmQu1QHvEg7YtWFZWmsoBXe"
-            }
+                "address": "3FVMj8WoA13m8Ha5JhZWfChugrCqbSbkjavU47yauu7a5YKNuP"
+            },
+            "amount": 0,
+            "energy": 30000
         }
     }
 }
@@ -401,20 +405,79 @@ Response:
     "id": 1,
     "result": {
         "tag": "success",
-        "usedEnergy": 503,
-        "returnValue": "00d2f35e0100000000",
+        "usedEnergy": 502,
+        "returnValue": "004d04000000000000",
         "events": [
             {
                 "amount": "0",
                 "tag": "Updated",
                 "contractVersion": 1,
                 "instigator": {
-                    "address": "3DJoe7aUwMwVmdFdRU2QsnJfsBbCmQu1QHvEg7YtWFZWmsoBXe",
+                    "address": "3FVMj8WoA13m8Ha5JhZWfChugrCqbSbkjavU47yauu7a5YKNuP",
                     "type": "AddressAccount"
                 },
                 "address": {
                     "subindex": 0,
-                    "index": 5102
+                    "index": 81
+                },
+                "receiveName": "PiggyBank.view",
+                "events": [],
+                "message": ""
+            }
+        ]
+    }
+}
+```
+##### Using a contract as the invoker
+Request:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "invokeContract",
+    "params": {
+        "blockHash": "a9ce1666a82411be7c3c3f8e18001227d6c19567f399fb7e88af856b43b51b3a",
+        "context": {
+            "method": "PiggyBank.view",
+            "contract": {
+                "index": 81,
+                "subindex": 0
+            },
+            "invoker": {
+                "type": "AddressContract",
+                "address": {
+                    "index": 5,
+                    "subindex": 0
+            }
+        }
+    }
+    }
+}
+```
+Response:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "tag": "success",
+        "usedEnergy": 502,
+        "returnValue": "004d04000000000000",
+        "events": [
+            {
+                "amount": "0",
+                "tag": "Updated",
+                "contractVersion": 1,
+                "instigator": {
+                    "address": {
+                        "subindex": 0,
+                        "index": 5
+                    },
+                    "type": "AddressContract"
+                },
+                "address": {
+                    "subindex": 0,
+                    "index": 81
                 },
                 "receiveName": "PiggyBank.view",
                 "events": [],

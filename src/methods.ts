@@ -24,30 +24,7 @@ import {
     validateParams,
 } from './validation';
 import JSONbig from 'json-bigint';
-
-type ContractAddress = {
-    index: number | bigint;
-    subindex: number | bigint;
-};
-type Invoker =
-    | {
-          type: 'AddressContract';
-          address: ContractAddress;
-      }
-    | {
-          type: 'AddressAccount';
-          address: string;
-      }
-    | null;
-
-interface ContractContext {
-    contract: ContractAddress;
-    method: string;
-    invoker?: Invoker;
-    amount?: bigint | number;
-    parameter?: string;
-    energy?: bigint | number;
-}
+import { ContractContext } from './types';
 
 function parseJsonResponse(response: Uint8Array) {
     return JSONbig.parse(JsonResponse.deserializeBinary(response).getValue());
@@ -346,7 +323,7 @@ class JsonRpcMethods {
         requestObject.setContext(
             JSON.stringify({
                 ...context,
-                amount: context.amount && context.amount.toString(),
+                amount: context.amount?.toString(),
             })
         );
 
