@@ -88,10 +88,7 @@ class JsonRpcMethods {
             .catch((e) => callback(e));
     }
 
-    sendTransaction(
-        transaction: string,
-        callback: JSONRPCCallbackTypePlain
-    ) {
+    sendTransaction(transaction: string, callback: JSONRPCCallbackTypePlain) {
         if (!isValidBase64(transaction)) {
             return invalidParameterError(
                 'The provided transaction [' +
