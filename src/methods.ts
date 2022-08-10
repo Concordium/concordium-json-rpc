@@ -88,7 +88,7 @@ class JsonRpcMethods {
             .catch((e) => callback(e));
     }
 
-    sendAccountTransaction(
+    sendTransaction(
         transaction: string,
         callback: JSONRPCCallbackTypePlain
     ) {
@@ -101,10 +101,10 @@ class JsonRpcMethods {
             );
         }
 
-        const serializedAccountTransaction = Buffer.from(transaction, 'base64');
+        const serializedTransaction = Buffer.from(transaction, 'base64');
         const sendTransactionRequest = new SendTransactionRequest();
         sendTransactionRequest.setNetworkId(100);
-        sendTransactionRequest.setPayload(serializedAccountTransaction);
+        sendTransactionRequest.setPayload(serializedTransaction);
 
         this.nodeClient
             .sendRequest(
@@ -331,12 +331,12 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
                 params.transactionHash,
                 callback
             ),
-        sendAccountTransaction: (
+        sendTransaction: (
             params: { transaction: string },
             callback: JSONRPCCallbackTypePlain
         ) =>
             validateParams(params, ['transaction'], callback) &&
-            jsonRpcMethods.sendAccountTransaction(params.transaction, callback),
+            jsonRpcMethods.sendTransaction(params.transaction, callback),
         getInstanceInfo: (
             params: {
                 blockHash: string;

@@ -94,9 +94,9 @@ Response:
 }
 ```
 
-### sendAccountTransaction
+### sendTransaction
 
-Sends an account transaction to a node.
+Sends a transaction to a node.
 
 #### Parameters
 - `transaction` - base64 encoding of a signed account transaction
@@ -107,7 +107,7 @@ Request:
 {
     "jsonrpc": "2.0",
     "id": 1,
-    "method": "sendAccountTransaction",
+    "method": "sendTransaction",
     "params": {
         "transaction": "AAABAAEAAEDYMtcAlGVGIUE/VicCz7GtRPvTpwm4xicy6FSds0CpblXdVoOfxJbE2DHi/mNS1GK6gHSQYmICJRoPc2Lnz0oD8OdnyWx1BiXHSyOFGyzSZ9nl/dKY1cW1qRoJbng0DtgAAAAAAAAFfAAAAAAAAAH1AAAAKQAAAABie23oA7Tep/GZ0TjKmhwXBE78NRGgt/TpPUGOdcBiI5czrkzQAAAAAAAAAGQ="
     }

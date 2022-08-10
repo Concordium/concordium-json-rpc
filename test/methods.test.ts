@@ -96,14 +96,14 @@ test('get transaction status with invalid transaction hash fails', async () => {
     expect(response.body.error.message).toContain('is invalid');
 });
 
-test('send an account transaction with missing transaction fails', async () => {
-    const sendAccountTransactionWithInvalidTransaction = createRequest(
-        'sendAccountTransaction',
+test('send a transaction with missing transaction fails', async () => {
+    const sendTransactionWithInvalidTransaction = createRequest(
+        'sendTransaction',
         { someWrongParam: 'value!' }
     );
     const response = await request(app)
         .post('/')
-        .send(sendAccountTransactionWithInvalidTransaction);
+        .send(sendTransactionWithInvalidTransaction);
 
     expect(response.status).toBe(400);
     expect(response.body.error.code).toBe(-32602);
@@ -112,14 +112,14 @@ test('send an account transaction with missing transaction fails', async () => {
     );
 });
 
-test('send an account transaction with a wrong encoding fails', async () => {
-    const sendAccountTransactionWithInvalidTransaction = createRequest(
-        'sendAccountTransaction',
+test('send a transaction with a wrong encoding fails', async () => {
+    const sendTransactionWithInvalidTransaction = createRequest(
+        'sendTransaction',
         { transaction: 'ThisIsNotBase64Encoded!' }
     );
     const response = await request(app)
         .post('/')
-        .send(sendAccountTransactionWithInvalidTransaction);
+        .send(sendTransactionWithInvalidTransaction);
 
     expect(response.status).toBe(400);
     expect(response.body.error.code).toBe(-32602);
