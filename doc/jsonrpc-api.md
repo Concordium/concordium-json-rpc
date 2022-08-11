@@ -99,7 +99,7 @@ Response:
 Sends a transaction to a node.
 
 #### Parameters
-- `transaction` - base64 encoding of a signed account transaction
+- `transaction` - base64 encoding of a signed transaction
 
 #### Example
 Request:
