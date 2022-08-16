@@ -9,12 +9,12 @@ ENV NODE_PORT=10001
 ENV NODE_TIMEOUT=10000
 
 WORKDIR /app
-COPY ./package.json ./
-COPY ./tsconfig.json ./
+COPY ./package.json ./yarn.lock ./tsconfig.json ./
 COPY ./src ./src
-COPY ./deps/concordium-grpc-api ./deps/concordium-grpc-api
+COPY ./deps ./deps
+
 
 RUN yarn && yarn cache clean
 RUN yarn generate && yarn build
 
-CMD node ./dist/app.js --port ${PORT} --nodeAddress ${NODE_ADDRESS} --nodePort ${NODE_PORT} --nodeTimeout ${NODE_TIMEOUT}
+CMD node ./dist/app.js --port "${PORT}" --nodeAddress "${NODE_ADDRESS}" --nodePort "${NODE_PORT}" --nodeTimeout "${NODE_TIMEOUT}"
