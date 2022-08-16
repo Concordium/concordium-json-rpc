@@ -7,6 +7,7 @@ const logger = winston.createLogger({
         winston.format.timestamp(),
         winston.format.json()
     ),
+    // TODO Log to stdout.
     transports: [
         new winston.transports.File({
             filename:
