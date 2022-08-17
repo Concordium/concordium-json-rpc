@@ -1,4 +1,4 @@
-ARG base_image=node:14
+ARG base_image=node:16-slim
 
 FROM ${base_image}
 
@@ -13,8 +13,7 @@ COPY ./package.json ./yarn.lock ./tsconfig.json ./
 COPY ./src ./src
 COPY ./deps ./deps
 
-
 RUN yarn && yarn cache clean
 RUN yarn generate && yarn build
 
-CMD node ./dist/app.js --port "${PORT}" --nodeAddress "${NODE_ADDRESS}" --nodePort "${NODE_PORT}" --nodeTimeout "${NODE_TIMEOUT}"
+ENTRYPOINT node ./dist/app.js --port "${PORT}" --nodeAddress "${NODE_ADDRESS}" --nodePort "${NODE_PORT}" --nodeTimeout "${NODE_TIMEOUT}" --logLocation /dev/stdout
