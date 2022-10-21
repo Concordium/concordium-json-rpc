@@ -2,7 +2,7 @@ import winston from 'winston';
 import minimist from 'minimist';
 
 const logger = winston.createLogger({
-    level: 'info',
+    level: minimist(process.argv.slice(2)).log || 'info',
     format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.json()

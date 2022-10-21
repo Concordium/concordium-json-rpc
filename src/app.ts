@@ -15,8 +15,9 @@ const jsonRpcPort = Number(argv.port);
 const nodeAddress = argv.nodeAddress;
 const nodePort = Number(argv.nodePort);
 const nodeTimeout = Number(argv.nodeTimeout);
+const useTLS = Boolean(argv.tls);
 
-server(nodeAddress, nodePort, nodeTimeout).listen(jsonRpcPort);
+server(nodeAddress, nodePort, nodeTimeout, useTLS).listen(jsonRpcPort);
 
 logger.info(
     'Concordium JSON-RPC server is now listening on port ' + jsonRpcPort,

@@ -7,19 +7,21 @@ import getJsonRpcMethods from './methods';
 import logger from './logger';
 import { v4 as uuidv4 } from 'uuid';
 import cors from 'cors';
+import { ResultAndMetadata } from './types';
 
 export default (
     nodeAddress: string,
     nodePort: number,
-    nodeTimeout: number
+    nodeTimeout: number,
+    useTLS: boolean
 ): Express => {
     const metadata = new Metadata();
     metadata.add('authentication', 'rpcadmin');
-    const insecureCredentials = credentials.createInsecure();
+    const creds = useTLS ? credentials.createSsl() : credentials.createInsecure();
     const nodeClient = new NodeClient(
         nodeAddress,
         nodePort,
-        insecureCredentials,
+        creds,
         metadata,
         nodeTimeout
     );
@@ -30,8 +32,16 @@ export default (
     app.use(express.json());
     app.post('/', (req, res, next) => {
         const correlationId = uuidv4();
-        const request = req.body;
+        let request = req.body;
         logger.info('Received a request', { correlationId });
+
+        const cookie = req.header('cookie');
+        const clientMetadata = new Metadata();
+        if (cookie) {
+            logger.debug('cookie', cookie, { correlationId });
+            clientMetadata.add('cookie', cookie);
+        }
+        request.params = { ...request.params, metadata: clientMetadata}
 
         server.call(request, (error, response) => {
             if (error) {
@@ -52,8 +62,17 @@ export default (
             }
 
             if (response) {
+                const {result, ...rest} = response;
+                const actualResponse = { ...rest, result: result.result};
+
+                const setCookie = (result as ResultAndMetadata<any>).metadata.get('set-cookie').map((x) => x.toString());
+                if (setCookie.length) {
+                    logger.debug('set-cookie:', setCookie);
+                    res.setHeader('set-cookie', setCookie);
+                }
+
                 logger.info('Successful request', { correlationId });
-                return res.send(response);
+                return res.send(actualResponse);
             } else {
                 logger.info('Successful request. Sent empty response', {
                     correlationId,

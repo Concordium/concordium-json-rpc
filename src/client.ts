@@ -1,5 +1,7 @@
 import { P2PClient } from '../grpc/concordium_p2p_rpc_grpc_pb';
 import { ChannelCredentials, Metadata, ServiceError } from '@grpc/grpc-js';
+import { SurfaceCall } from '@grpc/grpc-js/build/src/call';
+import { ResultAndMetadata } from './types';
 
 export default class NodeClient {
     client: P2PClient;
@@ -41,26 +43,31 @@ export default class NodeClient {
         this.client = new P2PClient(`${address}:${port}`, credentials, options);
     }
 
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    sendRequest<T>(command: any, input: T): Promise<Uint8Array> {
+    sendRequest<T>(command: any, input: T, metadata: Metadata): Promise<ResultAndMetadata> {
         const deadline = new Date(Date.now() + this.timeout);
-        return new Promise<Uint8Array>((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             this.client.waitForReady(deadline, (error) => {
                 if (error) {
                     return reject(error);
                 }
 
-                return command.bind(this.client)(
+                const clientMetadata = this.metadata.clone();
+                clientMetadata.merge(metadata);
+                let serverMetadata: Metadata;
+                const call: SurfaceCall  = command.bind(this.client)(
                     input,
-                    this.metadata,
+                    clientMetadata,
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (err: ServiceError | null, response: any) => {
+                    async (err: ServiceError | null, response: any) => {
                         if (err) {
                             return reject(err);
                         }
-                        return resolve(response.serializeBinary());
+                        return resolve({ result: response.serializeBinary(), metadata: serverMetadata });
                     }
                 );
+                call.on('metadata', (m) => {serverMetadata = m});
             });
         });
     }

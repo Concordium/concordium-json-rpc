@@ -1,3 +1,5 @@
+import { Metadata } from "@grpc/grpc-js";
+
 type ContractAddress = {
     index: number | bigint;
     subindex: number | bigint;
@@ -22,3 +24,8 @@ export interface ContractContext {
     parameter?: string;
     energy?: bigint | number;
 }
+
+export interface ResultAndMetadata<ResultType = Uint8Array> {
+    result: ResultType;
+    metadata: Metadata;
+};

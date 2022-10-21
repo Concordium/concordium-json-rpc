@@ -45,6 +45,15 @@ An example of running the server with a locally running Concordium node would be
 yarn start --port 9095 --nodeAddress 127.0.0.1 --nodePort 10001 --nodeTimeout 5000
 ```
 
+# Flags
+- log: level of the log. Defaults to info.
+- logLocation: location of the log file.
+- port: port that the JSON-RPC server should use.
+- nodeAddress: Address of the node, that the server should use as a backend.
+- nodePort: port of the node.
+- nodeTimeout: milliseconds that the server will wait for answers from the node.
+- tls: if this flag is present, the server will attempt to connect using TLS/SSL.
+
 # Linting
 To lint the project run:
 ```
