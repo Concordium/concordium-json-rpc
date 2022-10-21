@@ -1,7 +1,7 @@
 import server from '../src/server';
 import request from 'supertest';
 
-const app = server('127.0.0.1', 10000, 5000);
+const app = server('127.0.0.1', 10000, 5000, false);
 const jsonRpcServer = app.listen(11555);
 
 function createRequest(method: string, params?: { [key: string]: string }) {
@@ -26,7 +26,7 @@ test('missing params fails', async () => {
     expect(response.status).toBe(400);
     expect(response.body.error.code).toBe(-32602);
     expect(response.body.error.message).toContain(
-        "The 'params' object is missing"
+        "Missing 'address' parameter"
     );
 });
 
