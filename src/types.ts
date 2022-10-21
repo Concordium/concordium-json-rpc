@@ -1,4 +1,4 @@
-import { Metadata } from "@grpc/grpc-js";
+import { Metadata } from '@grpc/grpc-js';
 
 type ContractAddress = {
     index: number | bigint;
@@ -28,4 +28,4 @@ export interface ContractContext {
 export interface ResultAndMetadata<ResultType = Uint8Array> {
     result: ResultType;
     metadata: Metadata;
-};
+}

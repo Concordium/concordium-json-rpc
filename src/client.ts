@@ -43,9 +43,12 @@ export default class NodeClient {
         this.client = new P2PClient(`${address}:${port}`, credentials, options);
     }
 
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    sendRequest<T>(command: any, input: T, metadata: Metadata): Promise<ResultAndMetadata> {
+    sendRequest<T>(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+        command: any,
+        input: T,
+        metadata: Metadata
+    ): Promise<ResultAndMetadata> {
         const deadline = new Date(Date.now() + this.timeout);
         return new Promise((resolve, reject) => {
             this.client.waitForReady(deadline, (error) => {
@@ -56,7 +59,7 @@ export default class NodeClient {
                 const clientMetadata = this.metadata.clone();
                 clientMetadata.merge(metadata);
                 let serverMetadata: Metadata;
-                const call: SurfaceCall  = command.bind(this.client)(
+                const call: SurfaceCall = command.bind(this.client)(
                     input,
                     clientMetadata,
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,10 +67,15 @@ export default class NodeClient {
                         if (err) {
                             return reject(err);
                         }
-                        return resolve({ result: response.serializeBinary(), metadata: serverMetadata });
+                        return resolve({
+                            result: response.serializeBinary(),
+                            metadata: serverMetadata,
+                        });
                     }
                 );
-                call.on('metadata', (m) => {serverMetadata = m});
+                call.on('metadata', (m) => {
+                    serverMetadata = m;
+                });
             });
         });
     }

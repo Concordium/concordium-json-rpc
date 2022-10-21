@@ -31,8 +31,17 @@ interface WithMetadata {
     metadata: Metadata;
 }
 
-function parseJsonResponse({result, metadata}: ResultAndMetadata): ResultAndMetadata<any> {
-    return {result: JSONbig.parse(JsonResponse.deserializeBinary(result).getValue()), metadata};
+function parseJsonResponse({
+    result,
+    metadata,
+}: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+ResultAndMetadata): ResultAndMetadata<any> {
+    return {
+        result: JSONbig.parse(
+            JsonResponse.deserializeBinary(result).getValue()
+        ),
+        metadata,
+    };
 }
 
 class JsonRpcMethods {
@@ -61,7 +70,7 @@ class JsonRpcMethods {
             .sendRequest(
                 this.nodeClient.client.getNextAccountNonce,
                 accountAddressObject,
-                metadata,
+                metadata
             )
             .then((result) => callback(null, parseJsonResponse(result)))
             .catch((e) => callback(e));
@@ -88,13 +97,17 @@ class JsonRpcMethods {
             .sendRequest(
                 this.nodeClient.client.getTransactionStatus,
                 transactionHashObject,
-                metadata,
+                metadata
             )
             .then((result) => callback(null, parseJsonResponse(result)))
             .catch((e) => callback(e));
     }
 
-    sendTransaction(transaction: string, callback: JSONRPCCallbackTypePlain, metadata: Metadata) {
+    sendTransaction(
+        transaction: string,
+        callback: JSONRPCCallbackTypePlain,
+        metadata: Metadata
+    ) {
         if (!isValidBase64(transaction)) {
             return invalidParameterError(
                 'The provided transaction [' +
@@ -113,13 +126,13 @@ class JsonRpcMethods {
             .sendRequest(
                 this.nodeClient.client.sendTransaction,
                 sendTransactionRequest,
-                metadata,
+                metadata
             )
-            .then(({result, metadata}) =>
-                callback(
-                    null,
-                    {result: BoolResponse.deserializeBinary(result).getValue(), metadata}
-                )
+            .then(({ result, metadata }) =>
+                callback(null, {
+                    result: BoolResponse.deserializeBinary(result).getValue(),
+                    metadata,
+                })
             )
             .catch((e) => nodeError(e, callback));
     }
@@ -162,7 +175,7 @@ class JsonRpcMethods {
             .sendRequest(
                 this.nodeClient.client.getInstanceInfo,
                 getAddressInfoRequest,
-                metadata,
+                metadata
             )
             .then((result) => callback(null, parseJsonResponse(result)))
             .catch((e) => callback(e));
@@ -197,17 +210,24 @@ class JsonRpcMethods {
             .sendRequest(
                 this.nodeClient.client.getModuleSource,
                 moduleSourceRequest,
-                metadata,
+                metadata
             )
-            .then(({result, metadata}) =>
-                callback(null, { result: Buffer.from(result).toString('base64'), metadata})
+            .then(({ result, metadata }) =>
+                callback(null, {
+                    result: Buffer.from(result).toString('base64'),
+                    metadata,
+                })
             )
             .catch((e) => callback(e));
     }
 
     getConsensusStatus(callback: JSONRPCCallbackTypePlain, metadata: Metadata) {
         this.nodeClient
-            .sendRequest(this.nodeClient.client.getConsensusStatus, new Empty(), metadata)
+            .sendRequest(
+                this.nodeClient.client.getConsensusStatus,
+                new Empty(),
+                metadata
+            )
             .then((result) => callback(null, parseJsonResponse(result)))
             .catch((e) => callback(e));
     }
@@ -344,7 +364,11 @@ class JsonRpcMethods {
         );
 
         this.nodeClient
-            .sendRequest(this.nodeClient.client.invokeContract, requestObject, metadata)
+            .sendRequest(
+                this.nodeClient.client.invokeContract,
+                requestObject,
+                metadata
+            )
             .then((result) => callback(null, parseJsonResponse(result)))
             .catch((e) => callback(e));
     }
@@ -361,28 +385,37 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
             callback: JSONRPCCallbackTypePlain
         ) =>
             validateParams(params, ['address'], callback) &&
-            jsonRpcMethods.getNextAccountNonce(params.address, callback, params.metadata),
+            jsonRpcMethods.getNextAccountNonce(
+                params.address,
+                callback,
+                params.metadata
+            ),
         getTransactionStatus: (
-            params: { transactionHash: string }  & WithMetadata,
+            params: { transactionHash: string } & WithMetadata,
             callback: JSONRPCCallbackTypePlain
         ) =>
             validateParams(params, ['transactionHash'], callback) &&
             jsonRpcMethods.getTransactionStatus(
                 params.transactionHash,
-                callback, params.metadata
+                callback,
+                params.metadata
             ),
         sendTransaction: (
-            params: { transaction: string }  & WithMetadata,
+            params: { transaction: string } & WithMetadata,
             callback: JSONRPCCallbackTypePlain
         ) =>
             validateParams(params, ['transaction'], callback) &&
-            jsonRpcMethods.sendTransaction(params.transaction, callback, params.metadata),
+            jsonRpcMethods.sendTransaction(
+                params.transaction,
+                callback,
+                params.metadata
+            ),
         getInstanceInfo: (
             params: {
                 blockHash: string;
                 index: bigint | number;
                 subindex: bigint | number;
-            }  & WithMetadata,
+            } & WithMetadata,
             callback: JSONRPCCallbackTypePlain
         ) =>
             validateParams(
@@ -394,21 +427,23 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
                 params.blockHash,
                 params.index,
                 params.subindex,
-                callback, params.metadata
+                callback,
+                params.metadata
             ),
         getConsensusStatus: (
             params: WithMetadata,
             callback: JSONRPCCallbackTypePlain
         ) => jsonRpcMethods.getConsensusStatus(callback, params.metadata),
         getAccountInfo: (
-            params: { address: string; blockHash: string }  & WithMetadata,
+            params: { address: string; blockHash: string } & WithMetadata,
             callback: JSONRPCCallbackTypePlain
         ) =>
             validateParams(params, ['address', 'blockHash'], callback) &&
             jsonRpcMethods.getAccountInfo(
                 params.blockHash,
                 params.address,
-                callback, params.metadata
+                callback,
+                params.metadata
             ),
         getCryptographicParameters: (
             params: { blockHash: string } & WithMetadata,
@@ -417,10 +452,14 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
             validateParams(params, ['blockHash'], callback) &&
             jsonRpcMethods.getCryptographicParameters(
                 params.blockHash,
-                callback, params.metadata
+                callback,
+                params.metadata
             ),
         invokeContract: (
-            params: { blockHash: string; context: ContractContext }  & WithMetadata,
+            params: {
+                blockHash: string;
+                context: ContractContext;
+            } & WithMetadata,
             callback: JSONRPCCallbackTypePlain
         ) =>
             validateParams(params, ['blockHash', 'context'], callback) &&
@@ -432,7 +471,10 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
                 params.metadata
             ),
         getModuleSource: (
-            params: { blockHash: string; moduleReference: string }  & WithMetadata,
+            params: {
+                blockHash: string;
+                moduleReference: string;
+            } & WithMetadata,
             callback: JSONRPCCallbackTypePlain
         ) =>
             validateParams(
@@ -443,7 +485,8 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
             jsonRpcMethods.getModuleSource(
                 params.blockHash,
                 params.moduleReference,
-                callback, params.metadata
+                callback,
+                params.metadata
             ),
     };
 }

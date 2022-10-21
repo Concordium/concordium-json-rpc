@@ -17,7 +17,9 @@ export default (
 ): Express => {
     const metadata = new Metadata();
     metadata.add('authentication', 'rpcadmin');
-    const creds = useTLS ? credentials.createSsl() : credentials.createInsecure();
+    const creds = useTLS
+        ? credentials.createSsl()
+        : credentials.createInsecure();
     const nodeClient = new NodeClient(
         nodeAddress,
         nodePort,
@@ -32,7 +34,7 @@ export default (
     app.use(express.json());
     app.post('/', (req, res, next) => {
         const correlationId = uuidv4();
-        let request = req.body;
+        const request = req.body;
         logger.info('Received a request', { correlationId });
 
         const cookie = req.header('cookie');
@@ -41,7 +43,7 @@ export default (
             logger.debug('cookie', cookie, { correlationId });
             clientMetadata.add('cookie', cookie);
         }
-        request.params = { ...request.params, metadata: clientMetadata}
+        request.params = { ...request.params, metadata: clientMetadata };
 
         server.call(request, (error, response) => {
             if (error) {
@@ -62,10 +64,13 @@ export default (
             }
 
             if (response) {
-                const {result, ...rest} = response;
-                const actualResponse = { ...rest, result: result.result};
+                const { result, ...rest } = response;
+                const actualResponse = { ...rest, result: result.result };
 
-                const setCookie = (result as ResultAndMetadata<any>).metadata.get('set-cookie').map((x) => x.toString());
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const setCookie = (result as ResultAndMetadata<any>).metadata
+                    .get('set-cookie')
+                    .map((x) => x.toString());
                 if (setCookie.length) {
                     logger.debug('set-cookie:', setCookie);
                     res.setHeader('set-cookie', setCookie);
