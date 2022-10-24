@@ -10,6 +10,7 @@ import {
     Empty,
     InvokeContractRequest,
     GetModuleSourceRequest,
+    NodeInfoResponse,
 } from '../grpc/concordium_p2p_rpc_pb';
 import NodeClient from './client';
 import { invalidParameterError, nodeError } from './errors';
@@ -232,6 +233,20 @@ class JsonRpcMethods {
             .catch((e) => callback(e));
     }
 
+    nodeInfo(callback: JSONRPCCallbackTypePlain, metadata: Metadata) {
+        this.nodeClient
+            .sendRequest(
+                this.nodeClient.client.nodeInfo,
+                new Empty(),
+                metadata
+            )
+            .then(({result, metadata}) => callback(null, {
+                result: JSON.stringify(NodeInfoResponse.deserializeBinary(result).toObject()),
+                metadata,
+            }))
+            .catch((e) => callback(e));
+    }
+
     getAccountInfo(
         blockHash: string,
         address: string,
@@ -434,6 +449,10 @@ export default function getJsonRpcMethods(nodeClient: NodeClient): {
             params: WithMetadata,
             callback: JSONRPCCallbackTypePlain
         ) => jsonRpcMethods.getConsensusStatus(callback, params.metadata),
+        nodeInfo: (
+            params: WithMetadata,
+            callback: JSONRPCCallbackTypePlain
+        ) => jsonRpcMethods.nodeInfo(callback, params.metadata),
         getAccountInfo: (
             params: { address: string; blockHash: string } & WithMetadata,
             callback: JSONRPCCallbackTypePlain
