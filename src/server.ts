@@ -38,7 +38,9 @@ export default (
         logger.info('Received a request', { correlationId });
 
         const cookie = req.header('cookie');
+        // Prepare metadata that will be sent to the node.
         const clientMetadata = new Metadata();
+        // If there is a cookie header in the request, we add it to the metadata that will be sent to the node.
         if (cookie) {
             logger.debug('cookie', cookie, { correlationId });
             clientMetadata.add('cookie', cookie);
@@ -67,10 +69,12 @@ export default (
                 const { result, ...rest } = response;
                 const actualResponse = { ...rest, result: result.result };
 
+                // Get the setCookie metadata, and convert the values to strings, so that they can be used as http headers.
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const setCookie = (result as ResultAndMetadata<any>).metadata
                     .get('set-cookie')
                     .map((x) => x.toString());
+                // If there was a set-cookie header(s) in the metadata from the node, we add it as a header in the response.
                 if (setCookie.length) {
                     logger.debug('set-cookie:', setCookie);
                     res.setHeader('set-cookie', setCookie);
