@@ -8,10 +8,12 @@ const logger = winston.createLogger({
         winston.format.json()
     ),
     transports: [
-        new winston.transports.File({
-            filename: logLocation || 'combined.log',
-            maxsize: 10000000,
-        }),
+        logLocation
+            ? new winston.transports.File({
+                  filename: logLocation,
+                  maxsize: 10000000,
+              })
+            : new winston.transports.Console(),
     ],
 });
 

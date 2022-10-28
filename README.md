@@ -47,7 +47,7 @@ yarn start --port 9095 --nodeAddress 127.0.0.1 --nodePort 10001 --nodeTimeout 50
 
 # Flags
 - log: level of the log. Defaults to info.
-- logLocation: location of the log file.
+- logLocation: location of the log file. If this is not specified the server will write logs to stdout.
 - port: port that the JSON-RPC server should use.
 - nodeAddress: Address of the node, that the server should use as a backend.
 - nodePort: port of the node.
