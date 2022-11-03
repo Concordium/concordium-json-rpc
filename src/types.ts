@@ -1,3 +1,5 @@
+import { Metadata } from '@grpc/grpc-js';
+
 type ContractAddress = {
     index: number | bigint;
     subindex: number | bigint;
@@ -21,4 +23,10 @@ export interface ContractContext {
     amount?: bigint | number;
     parameter?: string;
     energy?: bigint | number;
+}
+
+// Used as the return type for jayson methods, so that we can get the metadata from the node when we create the response.
+export interface ResultAndMetadata<ResultType = Uint8Array> {
+    result: ResultType;
+    metadata: Metadata;
 }

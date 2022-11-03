@@ -1,18 +1,19 @@
 import winston from 'winston';
-import minimist from 'minimist';
+import { logLevel, logLocation } from './config';
 
 const logger = winston.createLogger({
-    level: 'info',
+    level: logLevel || 'info',
     format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.json()
     ),
     transports: [
-        new winston.transports.File({
-            filename:
-                minimist(process.argv.slice(2)).logLocation || 'combined.log',
-            maxsize: 10000000,
-        }),
+        logLocation
+            ? new winston.transports.File({
+                  filename: logLocation,
+                  maxsize: 10000000,
+              })
+            : new winston.transports.Console(),
     ],
 });
 
