@@ -18,4 +18,4 @@ COPY ./deps ./deps
 RUN yarn && yarn cache clean
 RUN yarn generate && yarn build
 
-ENTRYPOINT node ./dist/app.js --port "${PORT}" --nodeAddress "${NODE_ADDRESS}" --nodePort "${NODE_PORT}" --nodeTimeout "${NODE_TIMEOUT}" --log "${LOG_LEVEL}" --logLocation /dev/stdout $([ ! -z $USE_TLS ] && [ $USE_TLS = true ] && echo '--tls')
+ENTRYPOINT node ./dist/app.js --port "${PORT}" --nodeAddress "${NODE_ADDRESS}" --nodePort "${NODE_PORT}" --nodeTimeout "${NODE_TIMEOUT}" --log "${LOG_LEVEL}" $([ ! -z $USE_TLS ] && [ $USE_TLS = true ] && echo '--tls')
