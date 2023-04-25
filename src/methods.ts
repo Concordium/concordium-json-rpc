@@ -5,6 +5,7 @@ import {
     BoolResponse,
     GetAddressInfoRequest,
     JsonResponse,
+    BytesResponse,
     SendTransactionRequest,
     TransactionHash,
     Empty,
@@ -215,7 +216,7 @@ class JsonRpcMethods {
             )
             .then(({ result, metadata }) =>
                 callback(null, {
-                    result: Buffer.from(result).toString('base64'),
+                    result: Buffer.from(BytesResponse.deserializeBinary(result).getValue()).toString('base64'),
                     metadata,
                 })
             )
