@@ -216,7 +216,9 @@ class JsonRpcMethods {
             )
             .then(({ result, metadata }) =>
                 callback(null, {
-                    result: Buffer.from(BytesResponse.deserializeBinary(result).getValue()).toString('base64'),
+                    result: Buffer.from(
+                        BytesResponse.deserializeBinary(result).getValue()
+                    ).toString('base64'),
                     metadata,
                 })
             )
