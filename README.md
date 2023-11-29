@@ -1,3 +1,9 @@
+# Deprecated
+
+The JSON-RPC server relied on the V1 node API which has since been removed. This project is thus deprecated.
+Use one of the [available SDKs and APIs](https://developer.concordium.software/en/mainnet/net/guides/sdks-apis.html) instead.
+
+
 # Concordium JSON-RPC proxy server
 
 The Concordium JSON-RPC proxy server is a small server that acts as a wrapper for the gRPC interface exposed by the Concordium node.
